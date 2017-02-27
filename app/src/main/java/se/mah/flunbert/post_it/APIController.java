@@ -19,7 +19,12 @@ import org.mortbay.util.ajax.JSON;
 import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
 
-
+/**
+  0       * APIController class.
+        *
+        * @author Björn Svensson
+        * @since 23/2/2017
+        */
 public class APIController {
     private APIStorage apiStorage;
     private Controller controller;
@@ -83,16 +88,19 @@ public class APIController {
         return false;
     }
 
+    private void UploadPicture(){
+
+    }
 
 }
 
 
 class APIStorage{
-    protected static final String TWITTER_KEY = "KZ4v1oVkvRa7rveaRxsz6BnC3";
+    protected static final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
     /**
      * Defines a private static of string for the twitter secret.
      */
-    protected static final String TWITTER_SECRET = "Hu33z4x0DP1mmSSkCRO4EgDUTefWOI5uefAtklV9WDaV7tic9S";
+    protected static final String TWITTER_SECRET = "ZycIA5Eyoet3zatWRuTsJ2yRDHUb4K2j7vpG2gIC1S2qZdcAh8";
 }
 
 
