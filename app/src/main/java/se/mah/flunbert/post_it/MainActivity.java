@@ -5,11 +5,8 @@ import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends Activity {
 
@@ -24,8 +21,9 @@ public class MainActivity extends Activity {
         RelativeLayout cameraView = (RelativeLayout) findViewById(R.id.cameraView);
         TextView tvWeather = (TextView) findViewById(R.id.ivWeather);
         TextView tvLocation = (TextView) findViewById(R.id.ivLocation);
-        Button btnSelfie = (Button)findViewById(R.id.btnSelfie);
-        View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation, tvWeather, btnSelfie};
+        Button btnSelfie = (Button) findViewById(R.id.btnSelfie);
+        Button btnSend = (Button) findViewById(R.id.btnSend);
+        View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation, tvWeather, btnSelfie, btnSend};
         new Controller(this, views);
     }
 }

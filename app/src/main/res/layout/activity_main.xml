@@ -14,17 +14,33 @@
         <TextView
             android:id="@+id/ivWeather"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#e4c600"
+            android:layout_height="wrap_content"
+            android:background="#10ffffff"
+            android:padding="5dp"
+            android:textAlignment="textEnd"
+            android:textColor="#81ffffff"
+            android:textSize="40sp"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/ivLocation"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="#e400c6"
+            android:background="#10ffffff"
+            android:padding="5dp"
+            android:textColor="#81ffffff"
+            android:textSize="40sp"
             android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:enabled="false"
+            android:text="Send" />
     </RelativeLayout>
 
     <RelativeLayout

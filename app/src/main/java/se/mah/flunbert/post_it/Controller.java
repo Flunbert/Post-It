@@ -14,7 +14,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +46,7 @@ public class Controller implements SurfaceHolder.Callback {
     private TextView locationView;
     private TextView weatherView;
     private Button btnSelfie;
+    private Button btnSend;
 
     /**
      * Constructor.
@@ -104,6 +104,7 @@ public class Controller implements SurfaceHolder.Callback {
         locationView = (TextView) views[4];
         weatherView = (TextView) views[5];
         btnSelfie = (Button) views[6];
+        btnSend = (Button) views[7];
     }
 
     /**
@@ -114,6 +115,7 @@ public class Controller implements SurfaceHolder.Callback {
         ButtonListener buttonListener = new ButtonListener();
         btnSnap.setOnClickListener(buttonListener);
         btnSelfie.setOnClickListener(buttonListener);
+        btnSend.setOnClickListener(buttonListener);
     }
 
     /**
@@ -126,6 +128,7 @@ public class Controller implements SurfaceHolder.Callback {
         Bitmap image = Bitmap.createBitmap(defaultView.getDrawingCache());
         MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "Test", "Test here also");
         defaultView.setDrawingCacheEnabled(false);
+        clearScreen();
     }
 
     /**
@@ -164,6 +167,7 @@ public class Controller implements SurfaceHolder.Callback {
                 defaultView.setBackground(drawable);
                 Log.d(TAG, "Picture has been taken, scaled, and rotated");
                 //TODO: Show wait symbol
+                btnSend.setEnabled(true);
             } catch (Exception e) {
                 Log.e(TAG, "onPictureTaken: ", e);
             }
@@ -255,6 +259,7 @@ public class Controller implements SurfaceHolder.Callback {
         pictureTaken = null;
         weatherFetched = false;
         locationFetched = false;
+        btnSend.setEnabled(false);
     }
 
     /**
@@ -281,13 +286,13 @@ public class Controller implements SurfaceHolder.Callback {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
-            apiController.FetchAPI(APIController.APIs.weather,weatherView);
+            apiController.FetchAPI(APIController.APIs.weather, weatherView);
         } else if (value[0] == 0 && value[1] == 0 && value[2] >= 9 && !locationFetched) {
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
             locationView.setVisibility(View.VISIBLE);
-            apiController.FetchAPI(APIController.APIs.location,locationView);
+            apiController.FetchAPI(APIController.APIs.location, locationView);
         }
     }
 
@@ -319,8 +324,10 @@ public class Controller implements SurfaceHolder.Callback {
                     camera.takePicture(shutterCallback, rawCallback, jpegCallback);
                 else
                     Toast.makeText(mainActivity, "Please give the application permission to save pictures", Toast.LENGTH_SHORT).show();
-            if (view == btnSelfie)
+            else if (view == btnSelfie)
                 switchCamera();
+            else if (view == btnSend)
+                saveImageToGallery();
         }
     }
 }
