@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -29,20 +30,23 @@ import java.io.IOException;
 public class Controller implements SurfaceHolder.Callback {
     private static final String TAG = "Controller";
     private MainActivity mainActivity;
+    private byte currentCamera;
     private Bitmap pictureTaken;
     private Camera camera;
     private View[] views;
     private SurfaceHolder surfaceHolder;
     private boolean canSavePictures, canTakePictures, cameraIsOn, weatherFetched, locationFetched;
     private SensorController sensorController;
+    private APIController apiController;
 
     //TODO: Should these exist?
     private SurfaceView surfaceView;
     private Button btnSnap;
     private RelativeLayout defaultView;
     private RelativeLayout cameraView;
-    private ImageView locationView;
-    private ImageView weatherView;
+    private TextView locationView;
+    private TextView weatherView;
+    private Button btnSelfie;
 
     /**
      * Constructor.
@@ -55,6 +59,7 @@ public class Controller implements SurfaceHolder.Callback {
         this.views = views;
         sensorController = new SensorController(this, mainActivity);
         cameraIsOn = false;
+        currentCamera = 0;
         weatherFetched = false;
         locationFetched = false;
         pictureTaken = null;
@@ -66,6 +71,8 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        apiController = new APIController(mainActivity);
     }
 
     /**
@@ -94,8 +101,9 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceView = (SurfaceView) views[1];
         defaultView = (RelativeLayout) views[2];
         cameraView = (RelativeLayout) views[3];
-        locationView = (ImageView) views[4];
-        weatherView = (ImageView) views[5];
+        locationView = (TextView) views[4];
+        weatherView = (TextView) views[5];
+        btnSelfie = (Button) views[6];
     }
 
     /**
@@ -105,6 +113,7 @@ public class Controller implements SurfaceHolder.Callback {
         //TODO: Check if change is needed (maybe move to constructor?)
         ButtonListener buttonListener = new ButtonListener();
         btnSnap.setOnClickListener(buttonListener);
+        btnSelfie.setOnClickListener(buttonListener);
     }
 
     /**
@@ -112,7 +121,11 @@ public class Controller implements SurfaceHolder.Callback {
      */
     private void saveImageToGallery() {
         //TODO: Fix variable names
-        MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), pictureTaken, "Test", "Test here also");
+        defaultView.setDrawingCacheEnabled(true);
+        defaultView.buildDrawingCache(true);
+        Bitmap image = Bitmap.createBitmap(defaultView.getDrawingCache());
+        MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "Test", "Test here also");
+        defaultView.setDrawingCacheEnabled(false);
     }
 
     /**
@@ -165,12 +178,16 @@ public class Controller implements SurfaceHolder.Callback {
             if (canTakePictures) {
                 defaultView.setVisibility(View.INVISIBLE);
                 cameraView.setVisibility(View.VISIBLE);
-                camera = Camera.open();
+                camera = Camera.open(currentCamera);
                 camera.setPreviewDisplay(surfaceHolder);
-                Camera.Parameters params = camera.getParameters();
-                params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                camera.setParameters(params);
-                camera.setDisplayOrientation(90);
+                if (currentCamera == 0) {
+                    Camera.Parameters params = camera.getParameters();
+                    params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                    camera.setParameters(params);
+                    camera.setDisplayOrientation(90);
+                } else {
+                    camera.setDisplayOrientation(270);
+                }
                 camera.startPreview();
             } else
                 Toast.makeText(mainActivity, "Please give the application permission to use the camera", Toast.LENGTH_SHORT).show();
@@ -213,6 +230,19 @@ public class Controller implements SurfaceHolder.Callback {
         }
     }
 
+    private void switchCamera() {
+        Log.d(TAG, "switchCamera:");
+        if (currentCamera == 0) {
+            currentCamera = 1;
+            pauseCamera();
+            startCamera();
+        } else {
+            currentCamera = 0;
+            pauseCamera();
+            startCamera();
+        }
+    }
+
     /**
      * Resets the screen.
      */
@@ -251,13 +281,13 @@ public class Controller implements SurfaceHolder.Callback {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
-            APIController.FetchAPI(APIController.APIs.weather);
+            apiController.FetchAPI(APIController.APIs.weather,weatherView);
         } else if (value[0] == 0 && value[1] == 0 && value[2] >= 9 && !locationFetched) {
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
             locationView.setVisibility(View.VISIBLE);
-            APIController.FetchAPI(APIController.APIs.location);
+            apiController.FetchAPI(APIController.APIs.location,locationView);
         }
     }
 
@@ -284,10 +314,13 @@ public class Controller implements SurfaceHolder.Callback {
         @Override
         public void onClick(View view) {
             //TODO: Dialogframe instead of Toast mayhaps?
-            if (canSavePictures && cameraIsOn)
-                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            else
-                Toast.makeText(mainActivity, "Please give the application permission to save pictures", Toast.LENGTH_SHORT).show();
+            if (view == btnSnap)
+                if (canSavePictures && cameraIsOn)
+                    camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                else
+                    Toast.makeText(mainActivity, "Please give the application permission to save pictures", Toast.LENGTH_SHORT).show();
+            if (view == btnSelfie)
+                switchCamera();
         }
     }
 }

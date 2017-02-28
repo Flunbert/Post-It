@@ -21,12 +21,20 @@
                 <data android:scheme="oauth" android:host="t4jsample"/>
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="a28210cda33ddd7edf88b4dcfc0ac107e916a334" />
     </application>
     <!-- Permission - Internet Connect -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- Network State Permissions -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Permission - Location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <!-- Permission - Camera -->
     <uses-permission android:name="android.permission.CAMERA"/>

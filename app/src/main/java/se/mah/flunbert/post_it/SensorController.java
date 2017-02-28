@@ -7,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -54,10 +53,8 @@ public class SensorController implements SensorEventListener {
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (sensor != null) sensorList.add(sensor);
 
-        for (Sensor temp : sensorList) {
+        for (Sensor temp : sensorList)
             sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_UI);
-            Toast.makeText(activity, temp.getName() + " sensor registered", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override

@@ -25,6 +25,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        configurations.all {
+            resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+        }
     }
     buildTypes {
         release {
