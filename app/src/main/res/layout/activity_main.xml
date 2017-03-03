@@ -9,7 +9,7 @@
         android:id="@+id/defaultView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/galleri">
+        android:background="@drawable/default_background">
 
         <TextView
             android:id="@+id/ivWeather"
@@ -35,12 +35,14 @@
 
         <Button
             android:id="@+id/btnSend"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
+            android:background="@drawable/rounded_button"
             android:enabled="false"
-            android:text="Send" />
+            android:text="Send"
+            android:textColor="#b1ffffff" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -56,17 +58,21 @@
 
         <Button
             android:id="@+id/btnSnap"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:text="C" />
+            android:background="@drawable/rounded_button"
+            android:text="Snap"
+            android:textColor="#b1ffffff" />
 
         <Button
             android:id="@+id/btnSelfie"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:text="S" />
+            android:background="@drawable/rounded_button"
+            android:text="Selfie"
+            android:textColor="#b1ffffff" />
     </RelativeLayout>
 </RelativeLayout>

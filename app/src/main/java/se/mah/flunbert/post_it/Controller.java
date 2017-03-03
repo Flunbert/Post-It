@@ -253,7 +253,7 @@ public class Controller implements SurfaceHolder.Callback {
     private void clearScreen() {
         //TODO: Clear screen
         Log.d(TAG, "clearScreen: clearing screen");
-        defaultView.setBackground(mainActivity.getResources().getDrawable(R.drawable.galleri));
+        defaultView.setBackground(mainActivity.getResources().getDrawable(R.drawable.default_background));
         locationView.setVisibility(View.INVISIBLE);
         weatherView.setVisibility(View.INVISIBLE);
         pictureTaken = null;
