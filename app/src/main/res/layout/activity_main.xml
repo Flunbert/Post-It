@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="se.mah.flunbert.post_it.MainActivity">
 
     <RelativeLayout
@@ -60,19 +61,39 @@
             android:id="@+id/btnSnap"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
             android:background="@drawable/rounded_button"
             android:text="Snap"
-            android:textColor="#b1ffffff" />
+            android:textColor="#b1ffffff"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
 
         <Button
             android:id="@+id/btnSelfie"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
             android:background="@drawable/rounded_button"
             android:text="Selfie"
-            android:textColor="#b1ffffff" />
+            android:textColor="#b1ffffff"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true" />
+
     </RelativeLayout>
+
+    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <!-- Your contents -->
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:menu="@menu/my_navigation_items" />
+    </android.support.v4.widget.DrawerLayout>
+
 </RelativeLayout>

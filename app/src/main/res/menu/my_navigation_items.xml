@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:id="@+id/buttons" >
+        <item android:title="Connect to Twitter"
+            android:id="@+id/twitter_button" />
+
+        <item android:title="Connect to Facebook"
+            android:id="@+id/fb_button" />
+    </group>
+
+    <group android:id="@+id/Switches">
+
+        <item android:title="Twitter"
+            app:actionLayout="@layout/action_view_switch"
+            android:id="@+id/Twitter_switch" />
+
+        <item android:id="@+id/facebook_switch"
+            app:actionLayout="@layout/action_view_switch"
+            android:title="Facebook" />
+
+        <item android:title="Gallery"
+            android:id="@+id/gallery_switch" />
+    </group>
+
+    <item
+        android:title="turn on/off assistance"
+        android:id="@+id/help"
+        android:layout_alignParentBottom="true"/>
+
+
+</menu>
