@@ -327,7 +327,9 @@ public class Controller implements SurfaceHolder.Callback {
             else if (view == btnSelfie)
                 switchCamera();
             else if (view == btnSend)
-                saveImageToGallery();
+                apiController.SendToAPI(APIController.APIs.twitter,pictureTaken);
+            //saveImageToGallery();
+
         }
     }
 }

@@ -11,6 +11,13 @@
         android:layout_height="match_parent"
         android:background="@drawable/default_background">
 
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+
         <TextView
             android:id="@+id/ivWeather"
             android:layout_width="match_parent"
@@ -74,5 +81,6 @@
             android:background="@drawable/rounded_button"
             android:text="Selfie"
             android:textColor="#b1ffffff" />
+
     </RelativeLayout>
 </RelativeLayout>

@@ -1,6 +1,6 @@
 package se.mah.flunbert.post_it;
 /*
-import com.twitter.sdk.android.Twitter;
+
 import com.twitter.sdk.android.core.*;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -11,6 +11,7 @@ import com.twitter.sdk.android.core.services.StatusesService;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -21,6 +22,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +41,16 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+
+import io.fabric.sdk.android.Fabric;
+import retrofit2.Call;
+
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 
 /**
@@ -63,6 +80,7 @@ public class APIController {
         } else canUseGps = true;
 
         mLocationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+        RegisterAPI(APIController.APIs.twitter);
 
     }
 
@@ -70,7 +88,7 @@ public class APIController {
     public boolean RegisterAPI(APIs api) {
         switch (api) {
             case twitter:
-                // AuthorizeTwitter();
+                AuthorizeTwitter();
                 return true;
             default:
                 return false;
@@ -81,8 +99,7 @@ public class APIController {
 
         switch (api) {
             case twitter:
-                // AuthorizeTwitter();
-                return true;
+                return false;
             default:
                 return false;
         }
@@ -115,30 +132,17 @@ public class APIController {
     }
 
     private String getWeatherLocation() {
-        String weatherLoc = null;
         if (currentLoc == null) {
-            currentLoc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            currentLoc = getLocation();
         }
-        if (currentLoc != null && currentLoc.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
-            // Do something with the recent location fix
-            //  otherwise wait for the update below
-        } else {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new CurrentLocation());
-            weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
-        }
+           String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
         return weatherLoc;
     }
 
     private String getLocationString() {
-        //TODO: closer specification on current location
         if (currentLoc == null) {
-            currentLoc = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            currentLoc = getLocation();
         }
-        if (currentLoc != null && currentLoc.getTime() > Calendar.getInstance().getTimeInMillis() - 2 * 60 * 1000) {
-            // Do something with the recent location fix
-            //  otherwise wait for the update below
-        } else {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new CurrentLocation());
             String add = "";
             Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
             try {
@@ -152,33 +156,42 @@ public class APIController {
                 e1.printStackTrace();
             }
             return add;
-        }
-        return null;
+
+    }
+
+    private Location getLocation(){
+        CurrentLocation listener = new CurrentLocation();
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,listener);
+        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        mLocationManager.removeUpdates(listener);
+        return currentLocation;
     }
 
 
-    public JSON SendToAPI(APIs api) {
+    public JSON SendToAPI(APIs api, final Bitmap bitmap) {
         switch (api) {
             case twitter:
-                // AuthorizeTwitter();
+               // AuthorizeTwitter();
+                sendTweet(bitmap);
                 return null;
             default:
                 return null;
         }
     }
 
-    /*
-        private void sendTweet(String tweetText) {
+
+        private void sendTweet(Bitmap bitmap) {
+            String string = "Testing to send a picture through an android application to Twitter! If you read this now, it works!";
             TwitterSession session = Twitter.getSessionManager().getActiveSession();
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
             StatusesService service = twitterApiClient.getStatusesService();
-
-            Call<Tweet> call = service.update(tweetText, null, null, null, null, null, null, null, null);
+            Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, null);
             call.enqueue(new Callback<Tweet>() {
 
                 /**
                  * If sucess it procedes to send the result as a tweet.
                  * @param result
+                 */
 
                 @Override
                 public void success(Result<Tweet> result) {
@@ -189,17 +202,31 @@ public class APIController {
                 /**
                  * If fail, an exception is called upon and error message is displayed.
                  * @param exception
+                 */
 
                 public void failure(TwitterException exception) {
                     Log.e("TwitterException", exception.getMessage());
                 }
             });
         }
+
         private boolean AuthorizeTwitter() {
             TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
             Fabric.with(activity, new Twitter(authConfig));
-            return false;
-        } */
+            new Callback<TwitterSession>() {
+                @Override
+                public void success(Result<TwitterSession> result) {
+                    TwitterSession session = result.data;
+                    Toast.makeText(activity, "Connected to twitter!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    Toast.makeText(activity, "Failure to connect", Toast.LENGTH_SHORT).show();
+                }
+            };
+            return true;
+        }
     private class APIStorage {
         private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
         /**
