@@ -65,5 +65,6 @@ dependencies {
         transitive = true;
     }
 
-    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:design:25.2.0'
+    compile "com.android.support:support-core-utils:25.2.0"
 }

@@ -24,10 +24,16 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,19 +44,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
 import retrofit2.Call;
-
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.StatusesService;
 
 
 /**
@@ -135,7 +133,7 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-           String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
+        String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
         return weatherLoc;
     }
 
@@ -143,35 +141,35 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-            String add = "";
-            Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
-            try {
-                List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
+        String add = "";
+        Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
+        try {
+            List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
 
 
-                if (addresses.size() > 0) {
-                    add = addresses.get(0).getLocality();
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
+            if (addresses.size() > 0) {
+                add = addresses.get(0).getLocality();
             }
-            return add;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return add;
 
     }
 
-    private Location getLocation(){
-        CurrentLocation listener = new CurrentLocation();
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,listener);
-        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        mLocationManager.removeUpdates(listener);
-        return currentLocation;
+    private Location getLocation() {
+//        CurrentLocation listener = new CurrentLocation();
+//        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,listener);
+//        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//        mLocationManager.removeUpdates(listener);
+        return null;
     }
 
 
     public JSON SendToAPI(APIs api, final Bitmap bitmap) {
         switch (api) {
             case twitter:
-               // AuthorizeTwitter();
+                // AuthorizeTwitter();
                 sendTweet(bitmap);
                 return null;
             default:
@@ -180,53 +178,54 @@ public class APIController {
     }
 
 
-        private void sendTweet(Bitmap bitmap) {
-            String string = "Testing to send a picture through an android application to Twitter! If you read this now, it works!";
-            TwitterSession session = Twitter.getSessionManager().getActiveSession();
-            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
-            StatusesService service = twitterApiClient.getStatusesService();
-            Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, null);
-            call.enqueue(new Callback<Tweet>() {
+    private void sendTweet(Bitmap bitmap) {
+        String string = "Testing to send a picture through an android application to Twitter! If you read this now, it works!";
+        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
+        StatusesService service = twitterApiClient.getStatusesService();
+        Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, null);
+        call.enqueue(new Callback<Tweet>() {
 
-                /**
-                 * If sucess it procedes to send the result as a tweet.
-                 * @param result
-                 */
+            /**
+             * If sucess it procedes to send the result as a tweet.
+             * @param result
+             */
 
-                @Override
-                public void success(Result<Tweet> result) {
-                    Tweet tweet = result.data;
-                    Log.e("TwitterResult", tweet.text);
-                }
+            @Override
+            public void success(Result<Tweet> result) {
+                Tweet tweet = result.data;
+                Log.e("TwitterResult", tweet.text);
+            }
 
-                /**
-                 * If fail, an exception is called upon and error message is displayed.
-                 * @param exception
-                 */
+            /**
+             * If fail, an exception is called upon and error message is displayed.
+             * @param exception
+             */
 
-                public void failure(TwitterException exception) {
-                    Log.e("TwitterException", exception.getMessage());
-                }
-            });
-        }
+            public void failure(TwitterException exception) {
+                Log.e("TwitterException", exception.getMessage());
+            }
+        });
+    }
 
-        private boolean AuthorizeTwitter() {
-            TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
-            Fabric.with(activity, new Twitter(authConfig));
-            new Callback<TwitterSession>() {
-                @Override
-                public void success(Result<TwitterSession> result) {
-                    TwitterSession session = result.data;
-                    Toast.makeText(activity, "Connected to twitter!", Toast.LENGTH_SHORT).show();
-                }
+    private boolean AuthorizeTwitter() {
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
+        Fabric.with(activity, new Twitter(authConfig));
+        new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                TwitterSession session = result.data;
+                Toast.makeText(activity, "Connected to twitter!", Toast.LENGTH_SHORT).show();
+            }
 
-                @Override
-                public void failure(TwitterException exception) {
-                    Toast.makeText(activity, "Failure to connect", Toast.LENGTH_SHORT).show();
-                }
-            };
-            return true;
-        }
+            @Override
+            public void failure(TwitterException exception) {
+                Toast.makeText(activity, "Failure to connect", Toast.LENGTH_SHORT).show();
+            }
+        };
+        return true;
+    }
+
     private class APIStorage {
         private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
         /**
@@ -243,8 +242,7 @@ public class APIController {
             double longitude = location.getLongitude();
             double latitude = location.getLatitude();
             Log.v("Location Changed", latitude + " and " + longitude);
-            mLocationManager.removeUpdates(this);
-
+//            mLocationManager.removeUpdates(this);
         }
 
         @Override

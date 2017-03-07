@@ -286,13 +286,13 @@ public class Controller implements SurfaceHolder.Callback {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
-            apiController.FetchAPI(APIController.APIs.weather, weatherView);
+//            apiController.FetchAPI(APIController.APIs.weather, weatherView);
         } else if (value[0] == 0 && value[1] == 0 && value[2] >= 9 && !locationFetched) {
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
             locationView.setVisibility(View.VISIBLE);
-            apiController.FetchAPI(APIController.APIs.location, locationView);
+//            apiController.FetchAPI(APIController.APIs.location, locationView);
         }
     }
 
