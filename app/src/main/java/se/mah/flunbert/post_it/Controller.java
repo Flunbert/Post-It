@@ -27,6 +27,7 @@ import java.io.IOException;
  * @since 25/2/2017
  */
 public class Controller implements SurfaceHolder.Callback {
+    private String pathUrl;
     private static final String TAG = "Controller";
     private MainActivity mainActivity;
     private byte currentCamera;
@@ -126,7 +127,7 @@ public class Controller implements SurfaceHolder.Callback {
         defaultView.setDrawingCacheEnabled(true);
         defaultView.buildDrawingCache(true);
         Bitmap image = Bitmap.createBitmap(defaultView.getDrawingCache());
-        MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "Test", "Test here also");
+        pathUrl = MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "Test", "Test here also");
         defaultView.setDrawingCacheEnabled(false);
         clearScreen();
     }
@@ -326,10 +327,11 @@ public class Controller implements SurfaceHolder.Callback {
                     Toast.makeText(mainActivity, "Please give the application permission to save pictures", Toast.LENGTH_SHORT).show();
             else if (view == btnSelfie)
                 switchCamera();
-            else if (view == btnSend)
-                apiController.SendToAPI(APIController.APIs.twitter,pictureTaken);
-            //saveImageToGallery();
-
+            else if (view == btnSend) {
+                saveImageToGallery();
+                if (mainActivity.loggedIntoTwitter)
+                    apiController.SendToAPI(APIController.APIs.twitter, pathUrl);
+            }
         }
     }
 }

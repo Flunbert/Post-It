@@ -14,6 +14,7 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
@@ -22,7 +23,9 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity {
-    TwitterLoginButton loginButton;
+    private TwitterLoginButton loginButton;
+    private TwitterSession session;
+    public boolean loggedIntoTwitter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,17 +41,14 @@ public class MainActivity extends Activity {
         TextView tvLocation = (TextView) findViewById(R.id.ivLocation);
         Button btnSelfie = (Button) findViewById(R.id.btnSelfie);
         Button btnSend = (Button) findViewById(R.id.btnSend);
-        View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation, tvWeather, btnSelfie, btnSend};
-        new Controller(this, views);
-
-
         loginButton = (TwitterLoginButton)findViewById(R.id.login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                TwitterSession session = result.data;
+                session = result.data;
                 Toast.makeText(MainActivity.this, "Connected to twitter!", Toast.LENGTH_SHORT).show();
                 loginButton.setVisibility(8);
+                loggedIntoTwitter=true;
             }
 
             @Override
@@ -56,12 +56,17 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "Failure to connect", Toast.LENGTH_SHORT).show();
             }
         });
-
+        View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation, tvWeather, btnSelfie, btnSend,loginButton};
+        new Controller(this, views);
 
     }
     @Override
     protected void onActivityResult(int requestCode,int resultCode, Intent data){
         super.onActivityResult(resultCode,resultCode,data);
         loginButton.onActivityResult(requestCode,resultCode,data);
+    }
+
+    public TwitterSession getSession() {
+        return session;
     }
 }
