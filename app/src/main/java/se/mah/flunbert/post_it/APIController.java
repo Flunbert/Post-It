@@ -58,7 +58,7 @@ import com.twitter.sdk.android.core.services.StatusesService;
  * @since 23/2/2017
  */
 public class APIController {
-    private final boolean canUseGps;
+    private boolean canUseGps;
     private APIStorage apiStorage;
     private MainActivity activity;
     private LocationManager mLocationManager;
@@ -67,32 +67,32 @@ public class APIController {
     public enum APIs {
         facebook, twitter, weather, location
     }
-
-    public APIController(MainActivity activity) {
-        this.activity = activity;
-        this.apiStorage = new APIStorage();
-
+    public APIController(){
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             canUseGps = false;
         } else canUseGps = true;
-
+    }
+    public APIController(MainActivity activity) {
+        super();
+        this.activity = activity;
+        this.apiStorage = new APIStorage();
         mLocationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
 
     }
 
 
-    public boolean RegisterAPI(APIs api) {
+    public boolean registerAPI(APIs api) {
         switch (api) {
             case twitter:
-                AuthorizeTwitter();
+                authorizeTwitter();
                 return true;
             default:
                 return false;
         }
     }
 
-    public boolean DeregisterAPI(APIs api) {
+    public boolean deregisterAPI(APIs api) {
 
         switch (api) {
             case twitter:
@@ -108,7 +108,7 @@ public class APIController {
      * @param api
      * @return JSON object
      */
-    public String FetchAPI(APIs api, TextView tv) {
+    public String fetchAPI(APIs api, TextView tv) {
 
         switch (api) {
             case location:
@@ -156,16 +156,21 @@ public class APIController {
 
     }
 
+    @SuppressWarnings("MissingPermission")
     private Location getLocation(){
-        CurrentLocation listener = new CurrentLocation();
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,listener);
-        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        mLocationManager.removeUpdates(listener);
-        return currentLocation;
+        if(canUseGps) {
+            CurrentLocation listener = new CurrentLocation();
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+            Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mLocationManager.removeUpdates(listener);
+            return currentLocation;
+        }else {
+            return null;
+        }
     }
 
 
-    public JSON SendToAPI(APIs api, final String bitmap) {
+    public JSON sendToAPI(APIs api, final String bitmap) {
         switch (api) {
             case twitter:
                 sendTweet(bitmap);
@@ -236,7 +241,7 @@ public class APIController {
         }
 
 
-        private boolean AuthorizeTwitter() {
+        private boolean authorizeTwitter() {
             //TODO: Kanske kan rensas undan komplett?
             TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
             Fabric.with(activity, new Twitter(authConfig));
@@ -265,6 +270,7 @@ public class APIController {
     }
 
     private class CurrentLocation implements LocationListener {
+        @SuppressWarnings("MissingPermission")
         @Override
         public void onLocationChanged(Location location) {
             double longitude = location.getLongitude();

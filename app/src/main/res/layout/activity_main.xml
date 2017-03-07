@@ -147,12 +147,13 @@
             android:textColor="#FFFFFF"
             android:textSize="28sp" />
 
-        <Button
-            android:id="@+id/twitter_button"
-            android:layout_width="match_parent"
+        <com.twitter.sdk.android.core.identity.TwitterLoginButton
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal"
-            android:text="Twitter" />
+            android:layout_above="@+id/btnSnap"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center|center_horizontal" />
 
         <Button
             android:id="@+id/fb_button"
@@ -195,6 +196,8 @@
             android:textSize="20sp"
             android:paddingLeft="25px"
             android:paddingRight="40px" />
+
+
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
