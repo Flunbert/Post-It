@@ -41,7 +41,6 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/rounded_button"
-            android:enabled="false"
             android:text="Send"
             android:textColor="#b1ffffff" />
     </RelativeLayout>
