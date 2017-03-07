@@ -143,7 +143,7 @@
             android:layout_height="wrap_content"
             android:text="Connect to"
             android:textAlignment="center"
-            android:textColor="@color/tw__solid_white"
+            android:textColor="#FFFFFF"
             android:textSize="28sp" />
 
         <Button
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:text="Send to"
             android:textAlignment="center"
-            android:textColor="@color/tw__solid_white"
+            android:textColor="#FFFFFF"
             android:textSize="28sp" />
 
         <Switch
@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
             android:text="Twitter"
-            android:textColor="@color/tw__solid_white"
+            android:textColor="#FFFFFF"
             android:textSize="20sp" />
 
         <Switch
@@ -188,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
             android:text="Facebook"
-            android:textColor="@color/tw__solid_white"
+            android:textColor="#FFFFFF"
             android:textSize="20sp" />
 
         <android.support.v4.widget.Space
@@ -202,7 +202,7 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="Turn on/off assistance"
-            android:textColor="@color/tw__solid_white"
+            android:textColor="#FFFFFF"
             android:textSize="20sp" />
     </LinearLayout>
 
