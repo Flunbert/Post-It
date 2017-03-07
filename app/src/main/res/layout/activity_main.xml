@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="se.mah.flunbert.post_it.MainActivity">
 
     <RelativeLayout
@@ -61,42 +61,117 @@
             android:id="@+id/btnSnap"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:background="@drawable/rounded_button"
             android:text="Snap"
-            android:textColor="#b1ffffff"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true" />
+            android:textColor="#b1ffffff" />
 
         <Button
             android:id="@+id/btnSelfie"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
             android:background="@drawable/rounded_button"
             android:text="Selfie"
-            android:textColor="#b1ffffff"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true" />
+            android:textColor="#b1ffffff" />
 
     </RelativeLayout>
 
-    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/drawer_layout"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:orientation="vertical"
+        android:layout_gravity="left|start">
 
-        <LinearLayout
+        <Space
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="50px" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@mipmap/ic_launcher"
+            android:id="@+id/imageView2"
+            android:layout_weight="0.47" />
 
-        </LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50px" />
+
+        <TextView
+            android:text="Connect to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tw_connect"
+            android:textColor="@color/tw__solid_white"
+            android:textSize="28sp"
+            android:textAlignment="center" />
+
+        <Button
+            android:id="@+id/twitter_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:text="Twitter" />
+
+        <Button
+            android:id="@+id/fb_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:text="Facebook" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="100px" />
+
+        <TextView
+            android:text="Send to"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tw_send"
+            android:textColor="@color/tw__solid_white"
+            android:textSize="28sp"
+            android:textAlignment="center" />
+
+        <Switch
+            android:id="@+id/Twitter_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:text="Twitter"
+            android:textColor="@color/tw__solid_white" />
+
+        <Switch
+            android:id="@+id/facebook_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:text="Facebook"
+            android:textColor="@color/tw__solid_white" />
+
+        <Switch
+            android:id="@+id/gallery_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="Gallery"
+            android:textColor="@color/tw__solid_white" />
+
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/help_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Turn on/off assistance"
+            android:textColor="@color/tw__solid_white" />
+    </LinearLayout>
 
 
-    </android.support.v4.widget.DrawerLayout>
-
-</RelativeLayout>
+</android.support.v4.widget.DrawerLayout>
