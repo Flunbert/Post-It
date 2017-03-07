@@ -119,8 +119,9 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="left|start"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#3F037F"
+        android:layout_gravity="left|start">
 
         <Space
             android:layout_width="match_parent"
@@ -180,7 +181,9 @@
             android:layout_gravity="center|center_horizontal"
             android:text="Twitter"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:paddingRight="40px"
+            android:paddingLeft="25px" />
 
         <Switch
             android:id="@+id/facebook_switch"
@@ -189,7 +192,9 @@
             android:layout_gravity="center|center_horizontal"
             android:text="Facebook"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:paddingLeft="25px"
+            android:paddingRight="40px" />
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
@@ -203,7 +208,10 @@
             android:checked="true"
             android:text="Turn on/off assistance"
             android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:paddingBottom="25px"
+            android:paddingLeft="25px"
+            android:paddingRight="75px" />
     </LinearLayout>
 
 
