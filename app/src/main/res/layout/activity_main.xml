@@ -12,6 +12,44 @@
         android:layout_height="match_parent"
         android:background="@drawable/default_background">
 
+        <RelativeLayout
+            android:id="@+id/assistanceView"
+            android:layout_width="wrap_content"
+            android:layout_height="310dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="120dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weather"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/visualHeight"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="140dp"
+                android:text="Camera"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="Location"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
         <TextView
             android:id="@+id/ivWeather"
             android:layout_width="match_parent"
@@ -81,32 +119,32 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="left|start">
+        android:layout_gravity="left|start"
+        android:orientation="vertical">
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="50px" />
 
         <ImageView
+            android:id="@+id/imageView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@mipmap/ic_launcher"
-            android:id="@+id/imageView2"
-            android:layout_weight="0.47" />
+            android:layout_weight="0.47"
+            app:srcCompat="@mipmap/ic_launcher" />
 
         <Space
             android:layout_width="match_parent"
             android:layout_height="50px" />
 
         <TextView
-            android:text="Connect to"
+            android:id="@+id/tw_connect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tw_connect"
+            android:text="Connect to"
+            android:textAlignment="center"
             android:textColor="@color/tw__solid_white"
-            android:textSize="28sp"
-            android:textAlignment="center" />
+            android:textSize="28sp" />
 
         <Button
             android:id="@+id/twitter_button"
@@ -127,21 +165,22 @@
             android:layout_height="100px" />
 
         <TextView
-            android:text="Send to"
+            android:id="@+id/tw_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tw_send"
+            android:text="Send to"
+            android:textAlignment="center"
             android:textColor="@color/tw__solid_white"
-            android:textSize="28sp"
-            android:textAlignment="center" />
+            android:textSize="28sp" />
 
         <Switch
-            android:id="@+id/Twitter_switch"
+            android:id="@+id/twitter_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
             android:text="Twitter"
-            android:textColor="@color/tw__solid_white" />
+            android:textColor="@color/tw__solid_white"
+            android:textSize="20sp" />
 
         <Switch
             android:id="@+id/facebook_switch"
@@ -149,15 +188,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
             android:text="Facebook"
-            android:textColor="@color/tw__solid_white" />
-
-        <Switch
-            android:id="@+id/gallery_switch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:text="Gallery"
-            android:textColor="@color/tw__solid_white" />
+            android:textColor="@color/tw__solid_white"
+            android:textSize="20sp" />
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
@@ -168,8 +200,10 @@
             android:id="@+id/help_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:checked="true"
             android:text="Turn on/off assistance"
-            android:textColor="@color/tw__solid_white" />
+            android:textColor="@color/tw__solid_white"
+            android:textSize="20sp" />
     </LinearLayout>
 
 

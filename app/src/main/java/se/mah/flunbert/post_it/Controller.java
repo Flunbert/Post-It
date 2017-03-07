@@ -14,9 +14,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -27,16 +29,19 @@ import java.io.IOException;
  * @since 25/2/2017
  */
 public class Controller implements SurfaceHolder.Callback {
+    private boolean canSavePictures, cameraIsOn, weatherFetched, locationFetched;
     private static final String TAG = "Controller";
-    private MainActivity mainActivity;
-    private byte currentCamera;
-    private Bitmap pictureTaken;
-    private Camera camera;
-    private View[] views;
-    private SurfaceHolder surfaceHolder;
-    private boolean canSavePictures, canTakePictures, cameraIsOn, weatherFetched, locationFetched;
+    private Camera.ShutterCallback shutterCallback;
+    private Camera.PictureCallback jpegCallback;
+    private Camera.PictureCallback rawCallback;
     private SensorController sensorController;
     private APIController apiController;
+    private SurfaceHolder surfaceHolder;
+    private MainActivity mainActivity;
+    private Bitmap pictureTaken;
+    private byte currentCamera;
+    private Camera camera;
+    private View[] views;
 
     //TODO: Should these exist?
     private SurfaceView surfaceView;
@@ -47,6 +52,9 @@ public class Controller implements SurfaceHolder.Callback {
     private TextView weatherView;
     private Button btnSelfie;
     private Button btnSend;
+    private ImageView visualHeight;
+    private RelativeLayout assistanceView;
+    private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
 
     /**
      * Constructor.
@@ -67,6 +75,7 @@ public class Controller implements SurfaceHolder.Callback {
         initViews();
         initListeners();
         initPermissions();
+        initCallbacks();
 
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
@@ -79,17 +88,9 @@ public class Controller implements SurfaceHolder.Callback {
      * Initializes permissions.
      */
     private void initPermissions() {
-        //TODO: Maybe move to saveImageToGallery()
-        if (mainActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        //TODO: Maybe move to sendImage()
+        if (mainActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             mainActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            canSavePictures = false;
-        } else canSavePictures = true;
-
-        //TODO: Maybe move to startCamera()
-        if (mainActivity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            mainActivity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-            canTakePictures = false;
-        } else canTakePictures = true;
     }
 
     /**
@@ -105,6 +106,11 @@ public class Controller implements SurfaceHolder.Callback {
         weatherView = (TextView) views[5];
         btnSelfie = (Button) views[6];
         btnSend = (Button) views[7];
+        visualHeight = (ImageView) views[8];
+        assistanceView = (RelativeLayout) views[9];
+        assistanceSwitch = (Switch) views[10];
+        twitterSwitch = (Switch) views[11];
+        facebookSwitch = (Switch) views[12];
     }
 
     /**
@@ -116,70 +122,78 @@ public class Controller implements SurfaceHolder.Callback {
         btnSnap.setOnClickListener(buttonListener);
         btnSelfie.setOnClickListener(buttonListener);
         btnSend.setOnClickListener(buttonListener);
+        assistanceSwitch.setOnCheckedChangeListener(buttonListener);
+    }
+
+    /**
+     * Initialize callbacks from camera
+     */
+    private void initCallbacks() {
+        shutterCallback = new Camera.ShutterCallback() {
+            @Override
+            public void onShutter() {
+                //TODO: Make this private or hide in a method
+            }
+        };
+        rawCallback = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes, Camera camera) {
+                //TODO: Make this private or hide in a method
+            }
+        };
+        jpegCallback = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes, Camera camera) {
+                //TODO: Make this private or hide in a method
+                try {
+                    pauseCamera();
+                    Bitmap picture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(90);
+                    Bitmap scaled = Bitmap.createScaledBitmap(picture, picture.getWidth(), picture.getHeight(), true);
+                    pictureTaken = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
+                    //TODO: Change name perhaps?
+                    Drawable drawable = new BitmapDrawable(mainActivity.getResources(), pictureTaken);
+                    defaultView.setBackground(drawable);
+                    Log.d(TAG, "Picture has been taken, scaled, and rotated");
+                    //TODO: Show wait symbol
+                    btnSend.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    Log.e(TAG, "onPictureTaken: ", e);
+                }
+            }
+        };
     }
 
     /**
      * Saves image to the phones gallery
      */
-    private void saveImageToGallery() {
+    private void sendImage() {
         //TODO: Fix variable names
+        btnSend.setVisibility(View.INVISIBLE);
         defaultView.setDrawingCacheEnabled(true);
         defaultView.buildDrawingCache(true);
         Bitmap image = Bitmap.createBitmap(defaultView.getDrawingCache());
-        MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "Test", "Test here also");
+        MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "", "");
         defaultView.setDrawingCacheEnabled(false);
+        btnSend.setVisibility(View.VISIBLE);
+        if (twitterSwitch.isChecked()) {
+            //TODO: Send to twitter
+        }
+        if (facebookSwitch.isChecked()) {
+            //TODO: Send to facebook
+        }
         clearScreen();
     }
-
-    /**
-     * Shutter callback
-     */
-    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
-        @Override
-        public void onShutter() {
-            //TODO: Make this private or hide in a method
-        }
-    };
-    /**
-     * Raw image callback
-     */
-    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] bytes, Camera camera) {
-            //TODO: Make this private or hide in a method
-        }
-    };
-    /**
-     * Jpeg image callback
-     */
-    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
-        @Override
-        public void onPictureTaken(byte[] bytes, Camera camera) {
-            //TODO: Make this private or hide in a method
-            try {
-                Bitmap picture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Matrix matrix = new Matrix();
-                matrix.postRotate(90);
-                Bitmap scaled = Bitmap.createScaledBitmap(picture, picture.getWidth(), picture.getHeight(), true);
-                pictureTaken = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
-                //TODO: Change name perhaps?
-                Drawable drawable = new BitmapDrawable(mainActivity.getResources(), pictureTaken);
-                defaultView.setBackground(drawable);
-                Log.d(TAG, "Picture has been taken, scaled, and rotated");
-                //TODO: Show wait symbol
-                btnSend.setEnabled(true);
-            } catch (Exception e) {
-                Log.e(TAG, "onPictureTaken: ", e);
-            }
-        }
-    };
 
     /**
      * Resumes/starts camera.
      */
     public void startCamera() {
-        try {
-            if (canTakePictures) {
+        if (mainActivity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            mainActivity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
+        } else {
+            try {
                 defaultView.setVisibility(View.INVISIBLE);
                 cameraView.setVisibility(View.VISIBLE);
                 camera = Camera.open(currentCamera);
@@ -193,11 +207,10 @@ public class Controller implements SurfaceHolder.Callback {
                     camera.setDisplayOrientation(270);
                 }
                 camera.startPreview();
-            } else
-                Toast.makeText(mainActivity, "Please give the application permission to use the camera", Toast.LENGTH_SHORT).show();
-            //TODO: Perhaps a dialogframe instead of a Toast?
-        } catch (IOException e) {
-            e.printStackTrace();
+                //TODO: Perhaps a dialogframe instead of a Toast?
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -223,7 +236,13 @@ public class Controller implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
     }
 
-    public void sensorTriggered(SensorController.Sensors sensor, int[] value) {
+    /**
+     * TODO
+     *
+     * @param sensor
+     * @param value
+     */
+    public void sensorTriggered(SensorController.Sensors sensor, float[] value) {
         switch (sensor) {
             case accelerometer:
                 accelerometerChecks(value);
@@ -234,6 +253,9 @@ public class Controller implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * TODO
+     */
     private void switchCamera() {
         Log.d(TAG, "switchCamera:");
         if (currentCamera == 0) {
@@ -259,7 +281,7 @@ public class Controller implements SurfaceHolder.Callback {
         pictureTaken = null;
         weatherFetched = false;
         locationFetched = false;
-        btnSend.setEnabled(false);
+        btnSend.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -270,7 +292,8 @@ public class Controller implements SurfaceHolder.Callback {
      *
      * @param value: Values from the accelerometer sensor
      */
-    private void accelerometerChecks(int[] value) {
+    private void accelerometerChecks(float[] value) {
+        visualHeight.setTop(Math.round(value[2] * 50));
         if (value[1] > 9 && !cameraIsOn && pictureTaken == null) {
             cameraIsOn = true;
             //TODO: Check if should start camera
@@ -311,23 +334,38 @@ public class Controller implements SurfaceHolder.Callback {
         }
     }
 
+    public void onPause() {
+        sensorController.onPause();
+    }
+
+    public void onResume() {
+        sensorController.onResume();
+    }
+
     /**
      * Listener class for buttons.
      */
-    private class ButtonListener implements View.OnClickListener {
-
+    private class ButtonListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
         @Override
         public void onClick(View view) {
             //TODO: Dialogframe instead of Toast mayhaps?
-            if (view == btnSnap)
-                if (canSavePictures && cameraIsOn)
-                    camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                else
-                    Toast.makeText(mainActivity, "Please give the application permission to save pictures", Toast.LENGTH_SHORT).show();
-            else if (view == btnSelfie)
+            if (view == btnSnap && cameraIsOn) {
+                camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            } else if (view == btnSelfie)
                 switchCamera();
-            else if (view == btnSend)
-                saveImageToGallery();
+            else if (view == btnSend) {
+                sendImage();
+            }
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            if (compoundButton == assistanceSwitch) {
+                if (assistanceSwitch.isChecked())
+                    assistanceView.setVisibility(View.VISIBLE);
+                else
+                    assistanceView.setVisibility(View.INVISIBLE);
+            }
         }
     }
 }
