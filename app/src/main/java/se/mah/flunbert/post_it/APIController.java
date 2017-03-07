@@ -11,15 +11,18 @@ import com.twitter.sdk.android.core.services.StatusesService;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +43,8 @@ import org.json.JSONObject;
 import org.mortbay.util.ajax.JSON;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -48,8 +53,22 @@ import java.util.List;
 import java.util.Locale;
 
 import io.fabric.sdk.android.Fabric;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
+<<<<<<< HEAD
+=======
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Media;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.MediaService;
+import com.twitter.sdk.android.core.services.StatusesService;
+
+>>>>>>> refs/remotes/origin/Twittertesting
 
 /**
  * APIController class.
@@ -60,7 +79,7 @@ import retrofit2.Call;
 public class APIController {
     private final boolean canUseGps;
     private APIStorage apiStorage;
-    private Activity activity;
+    private MainActivity activity;
     private LocationManager mLocationManager;
     private Location currentLoc;
 
@@ -78,7 +97,6 @@ public class APIController {
         } else canUseGps = true;
 
         mLocationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
-        RegisterAPI(APIController.APIs.twitter);
 
     }
 
@@ -166,10 +184,13 @@ public class APIController {
     }
 
 
-    public JSON SendToAPI(APIs api, final Bitmap bitmap) {
+    public JSON SendToAPI(APIs api, final String bitmap) {
         switch (api) {
             case twitter:
+<<<<<<< HEAD
                 // AuthorizeTwitter();
+=======
+>>>>>>> refs/remotes/origin/Twittertesting
                 sendTweet(bitmap);
                 return null;
             default:
@@ -177,7 +198,17 @@ public class APIController {
         }
     }
 
+    private String getRealPathFromURI(Uri uri) {
+        Cursor cursor = activity.getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
+    }
 
+    private void sendTweet(String bitmapURL) {
+            final String string = "Sent by Post-it app project!";
+
+<<<<<<< HEAD
     private void sendTweet(Bitmap bitmap) {
         String string = "Testing to send a picture through an android application to Twitter! If you read this now, it works!";
         TwitterSession session = Twitter.getSessionManager().getActiveSession();
@@ -225,6 +256,69 @@ public class APIController {
         };
         return true;
     }
+=======
+            TwitterSession session = Twitter.getSessionManager().getActiveSession();
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
+            final StatusesService service = twitterApiClient.getStatusesService();
+            File file = new File(getRealPathFromURI(Uri.parse(bitmapURL)));
+
+            MediaService ms = twitterApiClient.getMediaService();
+            MediaType type = MediaType.parse("image/*");
+            RequestBody body = RequestBody.create(type,file);
+            Call<Media> mediaCall= ms.upload(body, null, null);
+
+            mediaCall.enqueue(new Callback<Media>() {
+                @Override
+                public void failure(TwitterException exception) {
+                    Toast.makeText(activity, "Media Call failed!", Toast.LENGTH_SHORT);
+
+                }
+
+                @Override
+                public void success(Result<Media> result) {
+                    Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, String.valueOf(result.data.mediaId));
+
+                    call.enqueue(new Callback<Tweet>() {
+
+                        /**
+                         * If sucess it procedes to send the result as a tweet.
+                         *
+                         * @param result
+                         */
+
+
+                        @Override
+                        public void success(Result<Tweet> result) {
+                            Tweet tweet = result.data;
+                            Log.e("TwitterResult", tweet.text);
+                        }
+
+                        /**
+                         * If fail, an exception is called upon and error message is displayed.
+                         *
+                         * @param exception
+                         */
+
+                        public void failure(TwitterException exception) {
+                            Log.e("TwitterException", exception.getMessage());
+                        }
+                    });
+                }
+            });
+        }
+
+
+        private boolean AuthorizeTwitter() {
+            //TODO: Kanske kan rensas undan komplett?
+            TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
+            Fabric.with(activity, new Twitter(authConfig));
+            new Callback<TwitterSession>() {
+                @Override
+                public void success(Result<TwitterSession> result) {
+                    TwitterSession session = result.data;
+                    Toast.makeText(activity, "Connected to twitter!", Toast.LENGTH_SHORT).show();
+                }
+>>>>>>> refs/remotes/origin/Twittertesting
 
     private class APIStorage {
         private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
