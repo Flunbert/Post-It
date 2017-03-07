@@ -25,6 +25,14 @@ public class SensorController implements SensorEventListener {
     private Controller controller;
     private Activity activity;
 
+    public void onPause() {
+        sensorManager.unregisterListener(this);
+    }
+
+    public void onResume() {
+        initSensors();
+    }
+
     public enum Sensors {
         proximity, accelerometer
     }
@@ -54,7 +62,7 @@ public class SensorController implements SensorEventListener {
         if (sensor != null) sensorList.add(sensor);
 
         for (Sensor temp : sensorList)
-            sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -62,7 +70,7 @@ public class SensorController implements SensorEventListener {
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
                 //TODO: Accelerometer has been fired
-                int[] values = {Math.round(sensorEvent.values[0]), Math.round(sensorEvent.values[1]), Math.round(sensorEvent.values[2])};
+                float[] values = {sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]};
                 controller.sensorTriggered(Sensors.accelerometer, values);
                 break;
             case Sensor.TYPE_PROXIMITY:
