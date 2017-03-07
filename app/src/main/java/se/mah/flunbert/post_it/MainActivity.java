@@ -14,7 +14,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.util.Value;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -56,7 +55,7 @@ public class MainActivity extends Activity {
         assistanceSwitch = (Switch) findViewById(R.id.help_switch);
         twitterSwitch = (Switch) findViewById(R.id.twitter_switch);
         facebookSwitch = (Switch) findViewById(R.id.facebook_switch);
-        loginButton = (TwitterLoginButton)findViewById(R.id.login_button);
+        loginButton = (TwitterLoginButton) findViewById(R.id.login_button);
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -93,15 +92,15 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
-        assistanceSwitch.setChecked(sharedPreferences.getBoolean("assistanceSwitch", false));
+        assistanceSwitch.setChecked(sharedPreferences.getBoolean("assistanceSwitch", true));
         twitterSwitch.setChecked(sharedPreferences.getBoolean("twitterSwitch", false));
         facebookSwitch.setChecked(sharedPreferences.getBoolean("facebookSwitch", false));
         controller.onResume();
     }
 
     @Override
-    protected void onActivityResult(int requestCode,int resultCode, Intent data){
-        super.onActivityResult(resultCode,resultCode,data);
-        loginButton.onActivityResult(requestCode,resultCode,data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(resultCode, resultCode, data);
+        loginButton.onActivityResult(requestCode, resultCode, data);
     }
 }

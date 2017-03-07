@@ -29,7 +29,7 @@ import java.io.IOException;
  * @since 25/2/2017
  */
 public class Controller implements SurfaceHolder.Callback {
-    private boolean canSavePictures, cameraIsOn, weatherFetched, locationFetched;
+    private boolean cameraIsOn, weatherFetched, locationFetched;
     private static final String TAG = "Controller";
     private Camera.ShutterCallback shutterCallback;
     private Camera.PictureCallback jpegCallback;
@@ -39,7 +39,7 @@ public class Controller implements SurfaceHolder.Callback {
     private SurfaceHolder surfaceHolder;
     private MainActivity mainActivity;
     private Bitmap pictureTaken;
-    private byte currentCamera;
+    private byte currentCamera, refreshRate;
     private Camera camera;
     private View[] views;
 
@@ -68,6 +68,7 @@ public class Controller implements SurfaceHolder.Callback {
         sensorController = new SensorController(this, mainActivity);
         cameraIsOn = false;
         currentCamera = 0;
+        refreshRate = 0;
         weatherFetched = false;
         locationFetched = false;
         pictureTaken = null;
@@ -171,15 +172,17 @@ public class Controller implements SurfaceHolder.Callback {
     private void sendImage() {
         //TODO: Fix variable names
         btnSend.setVisibility(View.INVISIBLE);
+        assistanceView.setVisibility(View.INVISIBLE);
         defaultView.setDrawingCacheEnabled(true);
         defaultView.buildDrawingCache(true);
         Bitmap image = Bitmap.createBitmap(defaultView.getDrawingCache());
         String path = MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), image, "", "");
         defaultView.setDrawingCacheEnabled(false);
         btnSend.setVisibility(View.VISIBLE);
+        assistanceView.setVisibility(View.VISIBLE);
         if (twitterSwitch.isChecked()) {
             //TODO: Send to twitter
-            apiController.sendToAPI(APIController.APIs.twitter,path);
+            apiController.sendToAPI(APIController.APIs.twitter, path);
         }
         if (facebookSwitch.isChecked()) {
             //TODO: Send to facebook
@@ -294,7 +297,12 @@ public class Controller implements SurfaceHolder.Callback {
      * @param value: Values from the accelerometer sensor
      */
     private void accelerometerChecks(float[] value) {
-        visualHeight.setTop(Math.round(value[2] * 50));
+        if (refreshRate == 5) {
+            visualHeight.setTop(Math.round(value[2] * 50));
+            refreshRate = 0;
+        } else
+            refreshRate++;
+
         if (value[1] > 9 && !cameraIsOn && pictureTaken == null) {
             cameraIsOn = true;
             //TODO: Check if should start camera
@@ -305,13 +313,13 @@ public class Controller implements SurfaceHolder.Callback {
             cameraIsOn = false;
             pauseCamera();
             Log.d(TAG, "sensorTriggered: pause camera");
-        } else if (value[0] == 0 && value[1] == 0 && value[2] <= -9 && !weatherFetched) {
+        } else if (value[0] < 1 && value[1] < 1 && value[2] <= -9 && !weatherFetched) {
             //TODO: Check if should fetch weather
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
             apiController.fetchAPI(APIController.APIs.weather, weatherView);
-        } else if (value[0] == 0 && value[1] == 0 && value[2] >= 9 && !locationFetched) {
+        } else if (value[0] < 1 && value[1] < 1 && value[2] >= 9 && !locationFetched) {
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");

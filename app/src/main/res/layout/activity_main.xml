@@ -113,15 +113,14 @@
             android:background="@drawable/rounded_button"
             android:text="Selfie"
             android:textColor="#b1ffffff" />
-
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_gravity="left|start"
         android:background="#3F037F"
-        android:layout_gravity="left|start">
+        android:orientation="vertical">
 
         <Space
             android:layout_width="match_parent"
@@ -180,24 +179,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
+            android:paddingLeft="25px"
+            android:paddingRight="40px"
             android:text="Twitter"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:paddingRight="40px"
-            android:paddingLeft="25px" />
+            android:textSize="20sp" />
 
         <Switch
             android:id="@+id/facebook_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|center_horizontal"
+            android:paddingLeft="25px"
+            android:paddingRight="40px"
             android:text="Facebook"
             android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:paddingLeft="25px"
-            android:paddingRight="40px" />
-
-
+            android:textSize="20sp" />
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"
@@ -209,13 +206,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:text="Turn on/off assistance"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
             android:paddingBottom="25px"
             android:paddingLeft="25px"
-            android:paddingRight="75px" />
+            android:paddingRight="75px"
+            android:text="Turn on/off assistance"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
     </LinearLayout>
-
-
 </android.support.v4.widget.DrawerLayout>
