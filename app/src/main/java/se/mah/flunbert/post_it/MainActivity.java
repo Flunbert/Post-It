@@ -24,7 +24,7 @@ import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity {
     private TwitterLoginButton loginButton;
-    private TwitterSession session;
+   // private TwitterSession session;
     public boolean loggedIntoTwitter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                session = result.data;
+                //session = result.data;
                 Toast.makeText(MainActivity.this, "Connected to twitter!", Toast.LENGTH_SHORT).show();
                 loginButton.setVisibility(8);
                 loggedIntoTwitter=true;
@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
         loginButton.onActivityResult(requestCode,resultCode,data);
     }
 
-    public TwitterSession getSession() {
-        return session;
-    }
+  // public TwitterSession getSession() {
+   //     return session;
+   // }
 }

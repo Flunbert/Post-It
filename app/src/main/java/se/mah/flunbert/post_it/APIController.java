@@ -197,7 +197,7 @@ public class APIController {
     private void sendTweet(String bitmapURL) {
             final String string = "Sent by Post-it app project!";
 
-            TwitterSession session = activity.getSession();
+            TwitterSession session = Twitter.getSessionManager().getActiveSession();
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
             final StatusesService service = twitterApiClient.getStatusesService();
             File file = new File(getRealPathFromURI(Uri.parse(bitmapURL)));
