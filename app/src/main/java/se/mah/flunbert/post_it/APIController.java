@@ -179,7 +179,6 @@ public class APIController {
     public JSON SendToAPI(APIs api, final String bitmap) {
         switch (api) {
             case twitter:
-               // AuthorizeTwitter();
                 sendTweet(bitmap);
                 return null;
             default:
@@ -216,7 +215,6 @@ public class APIController {
 
                 @Override
                 public void success(Result<Media> result) {
-                    //Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, result.data.mediaIdString);
                     Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, String.valueOf(result.data.mediaId));
 
                     call.enqueue(new Callback<Tweet>() {
@@ -250,6 +248,7 @@ public class APIController {
 
 
         private boolean AuthorizeTwitter() {
+            //TODO: Kanske kan rensas undan komplett?
             TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
             Fabric.with(activity, new Twitter(authConfig));
             new Callback<TwitterSession>() {
