@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:text="Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/twitter_button" />
+
+    <Button
+        android:text="Facebook"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fb_button" />
+
+    <Switch
+        android:text="Twitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/Twitter_switch" />
+
+    <Switch
+        android:text="Facebook"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/facebook_switch" />
+
+    <Switch
+        android:text="Gallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gallery_switch" />
+
+    <Switch
+        android:text="Turn on/off assistance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/help_switch" />
+</LinearLayout>

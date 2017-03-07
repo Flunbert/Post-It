@@ -4,29 +4,33 @@
 
     <group android:id="@+id/buttons" >
         <item android:title="Connect to Twitter"
+            app:actionLayout="@layout/action_view"
             android:id="@+id/twitter_button" />
 
         <item android:title="Connect to Facebook"
+            app:actionLayout="@layout/action_view"
             android:id="@+id/fb_button" />
     </group>
 
     <group android:id="@+id/Switches">
 
         <item android:title="Twitter"
-            app:actionLayout="@layout/action_view_switch"
+            app:actionLayout="@layout/action_view"
             android:id="@+id/Twitter_switch" />
 
         <item android:id="@+id/facebook_switch"
-            app:actionLayout="@layout/action_view_switch"
+            app:actionLayout="@layout/action_view"
             android:title="Facebook" />
 
         <item android:title="Gallery"
+            app:actionLayout="@layout/action_view"
             android:id="@+id/gallery_switch" />
     </group>
 
     <item
         android:title="turn on/off assistance"
         android:id="@+id/help"
+        app:actionLayout="@layout/action_view"
         android:layout_alignParentBottom="true"/>
 
 
