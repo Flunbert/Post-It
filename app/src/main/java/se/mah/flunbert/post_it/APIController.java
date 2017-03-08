@@ -67,14 +67,12 @@ public class APIController {
     public enum APIs {
         facebook, twitter, weather, location
     }
-    public APIController(){
+
+    public APIController(MainActivity activity) {
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             canUseGps = false;
         } else canUseGps = true;
-    }
-    public APIController(MainActivity activity) {
-        super();
         this.activity = activity;
         this.apiStorage = new APIStorage();
         mLocationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
