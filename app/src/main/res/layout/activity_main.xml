@@ -19,20 +19,19 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="120dp">
 
+            <ImageView
+                android:id="@+id/visualHeight"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/marker" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Weather"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/visualHeight"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
-
-                />
 
             <TextView
                 android:layout_width="wrap_content"

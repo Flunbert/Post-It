@@ -297,18 +297,18 @@ public class Controller implements SurfaceHolder.Callback {
      * @param value: Values from the accelerometer sensor
      */
     private void accelerometerChecks(float[] value) {
-        if (refreshRate == 5) {
+        if (refreshRate == 3) {
             visualHeight.setTop(Math.round(value[2] * 50));
             refreshRate = 0;
         } else
             refreshRate++;
 
-        if (value[1] > 9 && !cameraIsOn && pictureTaken == null) {
+        if (value[1] > 9.3 && !cameraIsOn && pictureTaken == null) {
             cameraIsOn = true;
             //TODO: Check if should start camera
             startCamera();
             Log.d(TAG, "sensorTriggered: start camera");
-        } else if (value[1] < 8 && cameraIsOn) {
+        } else if (value[1] < 9 && cameraIsOn) {
             //TODO: Check if should close camera
             cameraIsOn = false;
             pauseCamera();
