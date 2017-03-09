@@ -2,6 +2,8 @@ package se.mah.flunbert.post_it;
 
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Address;
@@ -15,6 +17,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.webkit.CookieManager;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,7 +87,7 @@ public class APIController {
     public boolean registerAPI(APIs api) {
         switch (api) {
             case twitter:
-                authorizeTwitter();
+                //authorizeTwitter();
                 return true;
             default:
                 return false;
@@ -94,6 +98,13 @@ public class APIController {
 
         switch (api) {
             case twitter:
+                TwitterSession twitterSession = TwitterCore.getInstance().getSessionManager().getActiveSession();
+                if (twitterSession != null) {
+                    CookieManager.getInstance().removeAllCookies(null);
+                    CookieManager.getInstance().flush();
+                    Twitter.getSessionManager().clearActiveSession();
+                    Twitter.logOut();
+                }
                 return false;
             default:
                 return false;
@@ -154,6 +165,10 @@ public class APIController {
 
     }
 
+    /**
+     * Method used to get a location from the gps.
+     * @return Location object from the gps
+     */
     @SuppressWarnings("MissingPermission")
     private Location getLocation(){
         if(canUseGps) {
@@ -168,16 +183,27 @@ public class APIController {
     }
 
 
-    public JSON sendToAPI(APIs api, final String bitmap) {
+    /**
+     * Method used when information (image) is being sent to an API
+     * @param api which api is being sent to
+     * @param bitmap the image url
+     */
+    public void sendToAPI(APIs api, final String bitmap) {
         switch (api) {
             case twitter:
                 sendTweet(bitmap);
-                return null;
+                return;
             default:
-                return null;
+                return;
         }
     }
 
+    /**
+     * Method used to parse the real path to the location of the image used
+     * to upload to social media
+     * @param uri the uri for the image
+     * @return the translated path from the uri
+     */
     private String getRealPathFromURI(Uri uri) {
         Cursor cursor = activity.getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
@@ -185,30 +211,59 @@ public class APIController {
         return cursor.getString(idx);
     }
 
+    /**
+     * Method used to send a tweet with an image
+     * @param bitmapURL the path to the image storage location
+     */
     private void sendTweet(String bitmapURL) {
-            final String string = "Sent by Post-it app project!";
+        final String string = "Sent by Post-it app project!";
 
-            TwitterSession session = Twitter.getSessionManager().getActiveSession();
+        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+        if (session == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle("No Twitter session found");
+            builder
+                    .setMessage("Please log into twitter in order to send this image as a tweet.")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
             final StatusesService service = twitterApiClient.getStatusesService();
             File file = new File(getRealPathFromURI(Uri.parse(bitmapURL)));
 
             MediaService ms = twitterApiClient.getMediaService();
             MediaType type = MediaType.parse("image/*");
-            RequestBody body = RequestBody.create(type,file);
-            Call<Media> mediaCall= ms.upload(body, null, null);
+            RequestBody body = RequestBody.create(type, file);
+            Call<Media> mediaCall = ms.upload(body, null, null);
 
             mediaCall.enqueue(new Callback<Media>() {
                 @Override
                 public void failure(TwitterException exception) {
-                    Toast.makeText(activity, "Media Call failed!", Toast.LENGTH_SHORT);
-
+                    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                    builder.setTitle("Tweet has NOT been sent");
+                    builder
+                            .setMessage("something went wrong")
+                            .setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
 
                 @Override
                 public void success(Result<Media> result) {
                     Call<Tweet> call = service.update(string, null, null, null, null, null, null, null, String.valueOf(result.data.mediaId));
-
                     call.enqueue(new Callback<Tweet>() {
 
                         /**
@@ -216,11 +271,22 @@ public class APIController {
                          *
                          * @param result
                          */
-
-
                         @Override
                         public void success(Result<Tweet> result) {
                             Tweet tweet = result.data;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                            builder.setTitle("Tweet has been sent");
+                            builder
+                                    .setMessage("all went ok!")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
                             Log.e("TwitterResult", tweet.text);
                         }
 
@@ -229,16 +295,29 @@ public class APIController {
                          *
                          * @param exception
                          */
-
                         public void failure(TwitterException exception) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                            builder.setTitle("Tweet has NOT been sent");
+                            builder
+                                    .setMessage("something went wrong")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
+                            AlertDialog dialog = builder.create();
+                            dialog.show();
                             Log.e("TwitterException", exception.getMessage());
                         }
                     });
                 }
             });
         }
+    }
 
-
+/*
         private boolean authorizeTwitter() {
             //TODO: Kanske kan rensas undan komplett?
             TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
@@ -256,7 +335,8 @@ public class APIController {
                 }
             };
             return true;
-        }
+        }*/
+
     private class APIStorage {
         private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
         /**
@@ -267,6 +347,9 @@ public class APIController {
         private final String WEATHER_KEY = "56fc4dd72aef4a05b9780638172802";
     }
 
+    /**
+     * Listener Class used to get a location
+     */
     private class CurrentLocation implements LocationListener {
         @SuppressWarnings("MissingPermission")
         @Override

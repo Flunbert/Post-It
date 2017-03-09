@@ -19,6 +19,13 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import java.io.IOException;
 
@@ -55,6 +62,8 @@ public class Controller implements SurfaceHolder.Callback {
     private ImageView visualHeight;
     private RelativeLayout assistanceView;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
+    private TwitterLoginButton twitterLoginButton;
+    private Button twitterLogoutButton;
 
     /**
      * Constructor.
@@ -65,6 +74,7 @@ public class Controller implements SurfaceHolder.Callback {
     public Controller(MainActivity mainActivity, View[] views) {
         this.mainActivity = mainActivity;
         this.views = views;
+        apiController = new APIController(mainActivity);
         sensorController = new SensorController(this, mainActivity);
         cameraIsOn = false;
         currentCamera = 0;
@@ -82,7 +92,7 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        apiController = new APIController(mainActivity);
+
     }
 
     /**
@@ -112,6 +122,9 @@ public class Controller implements SurfaceHolder.Callback {
         assistanceSwitch = (Switch) views[10];
         twitterSwitch = (Switch) views[11];
         facebookSwitch = (Switch) views[12];
+        twitterLoginButton = (TwitterLoginButton) views[13];
+        twitterLogoutButton = (Button) views[14];
+
     }
 
     /**
@@ -124,6 +137,7 @@ public class Controller implements SurfaceHolder.Callback {
         btnSelfie.setOnClickListener(buttonListener);
         btnSend.setOnClickListener(buttonListener);
         assistanceSwitch.setOnCheckedChangeListener(buttonListener);
+        twitterLogoutButton.setOnClickListener(buttonListener);
     }
 
     /**
@@ -164,6 +178,20 @@ public class Controller implements SurfaceHolder.Callback {
                 }
             }
         };
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                twitterSwitch.setChecked(true);
+                Toast.makeText(mainActivity, "Connected to twitter!", Toast.LENGTH_LONG).show();
+                twitterLoginButton.setVisibility(View.GONE);
+                twitterLogoutButton.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Toast.makeText(mainActivity, "Failure to connect", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
@@ -360,10 +388,15 @@ public class Controller implements SurfaceHolder.Callback {
             //TODO: Dialogframe instead of Toast mayhaps?
             if (view == btnSnap && cameraIsOn) {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            } else if (view == btnSelfie)
+            } else if (view == btnSelfie) {
                 switchCamera();
-            else if (view == btnSend) {
+            }else if (view == btnSend) {
                 sendImage();
+            }else if(view == twitterLogoutButton){
+                apiController.deregisterAPI(APIController.APIs.twitter);
+                twitterLogoutButton.setVisibility(View.GONE);
+                twitterLoginButton.setVisibility(View.VISIBLE);
+                twitterSwitch.setChecked(false);
             }
         }
 

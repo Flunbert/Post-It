@@ -148,7 +148,17 @@
 
         <com.twitter.sdk.android.core.identity.TwitterLoginButton
             android:id="@+id/login_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btnSnap"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center|center_horizontal" />
+        <Button
+            android:id="@+id/logout_button"
+            android:background="@drawable/tw__login_btn"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/btnSnap"
             android:layout_centerHorizontal="true"
