@@ -276,7 +276,7 @@ public class Controller implements SurfaceHolder.Callback {
      */
     public void sensorTriggered(SensorController.Sensors sensor, float[] value) {
         switch (sensor) {
-            case accelerometer:
+            case rotation:
                 accelerometerChecks(value);
                 break;
             case proximity:
@@ -322,7 +322,7 @@ public class Controller implements SurfaceHolder.Callback {
      * If device is held up above user, fetch weather from API.
      * If device is held down towards the ground, fetch location form API.
      *
-     * @param value: Values from the accelerometer sensor
+     * @param value: Values from the rotation sensor
      */
     private void accelerometerChecks(float[] value) {
         if (refreshRate == 3) {

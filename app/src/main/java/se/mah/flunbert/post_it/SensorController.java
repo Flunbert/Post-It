@@ -34,7 +34,7 @@ public class SensorController implements SensorEventListener {
     }
 
     public enum Sensors {
-        proximity, accelerometer
+        proximity, rotation
     }
 
     /**
@@ -58,7 +58,7 @@ public class SensorController implements SensorEventListener {
         sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if (sensor != null) sensorList.add(sensor);
-        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         if (sensor != null) sensorList.add(sensor);
 
         for (Sensor temp : sensorList)
@@ -68,10 +68,10 @@ public class SensorController implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         switch (sensorEvent.sensor.getType()) {
-            case Sensor.TYPE_ACCELEROMETER:
+            case Sensor.TYPE_GAME_ROTATION_VECTOR:
                 //TODO: Accelerometer has been fired
                 float[] values = {sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]};
-                controller.sensorTriggered(Sensors.accelerometer, values);
+                controller.sensorTriggered(Sensors.rotation, values);
                 break;
             case Sensor.TYPE_PROXIMITY:
                 //TODO: Proximity sensor has been fired

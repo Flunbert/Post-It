@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
@@ -15,12 +17,12 @@ import android.widget.TextView;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity {
+    private static String TAG = "MainActivity";
     private Controller controller;
     private SharedPreferences sharedPreferences;
     private Switch assistanceSwitch;
@@ -57,7 +59,7 @@ public class MainActivity extends Activity {
         twitterLogoutButton.setText("Logout Twitter");
         if (Twitter.getSessionManager().getActiveSession() == null) {
             twitterLogoutButton.setVisibility(View.GONE);
-        }else{
+        } else {
             twitterLoginButton.setVisibility(View.GONE);
         }
         View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation,
@@ -91,5 +93,13 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, resultCode, data);
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+        if (data.getExtras().containsKey("screen_name")) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    twitterSwitch.setChecked(true);
+                }
+            });
+        }
     }
 }

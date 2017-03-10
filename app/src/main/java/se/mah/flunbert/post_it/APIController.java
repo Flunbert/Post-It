@@ -18,18 +18,22 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Media;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.MediaService;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mortbay.util.ajax.JSON;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,19 +44,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
-import io.fabric.sdk.android.Fabric;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
-
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.models.Media;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.MediaService;
-import com.twitter.sdk.android.core.services.StatusesService;
 
 
 /**
@@ -62,6 +56,7 @@ import com.twitter.sdk.android.core.services.StatusesService;
  * @since 23/2/2017
  */
 public class APIController {
+    private static String TAG = "APIController";
     private boolean canUseGps;
     private APIStorage apiStorage;
     private MainActivity activity;
@@ -141,7 +136,7 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-           String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
+        String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
         return weatherLoc;
     }
 
@@ -149,43 +144,46 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-            String add = "";
-            Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
-            try {
-                List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
-
-
-                if (addresses.size() > 0) {
-                    add = addresses.get(0).getLocality();
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
+        String add = "";
+        Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
+        try {
+            List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
+            if (addresses.size() > 0) {
+                add = addresses.get(0).getLocality();
             }
-            return add;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return add;
 
     }
 
     /**
      * Method used to get a location from the gps.
+     *
      * @return Location object from the gps
      */
-    @SuppressWarnings("MissingPermission")
-    private Location getLocation(){
-        if(canUseGps) {
-            CurrentLocation listener = new CurrentLocation();
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-            Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            mLocationManager.removeUpdates(listener);
-            return currentLocation;
-        }else {
+    private Location getLocation() {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return null;
+        } else {
+            if (canUseGps) {
+                CurrentLocation listener = new CurrentLocation();
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+                Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                mLocationManager.removeUpdates(listener);
+                return currentLocation;
+            } else {
+                return null;
+            }
         }
     }
 
-
     /**
      * Method used when information (image) is being sent to an API
-     * @param api which api is being sent to
+     *
+     * @param api    which api is being sent to
      * @param bitmap the image url
      */
     public void sendToAPI(APIs api, final String bitmap) {
@@ -201,6 +199,7 @@ public class APIController {
     /**
      * Method used to parse the real path to the location of the image used
      * to upload to social media
+     *
      * @param uri the uri for the image
      * @return the translated path from the uri
      */
@@ -213,6 +212,7 @@ public class APIController {
 
     /**
      * Method used to send a tweet with an image
+     *
      * @param bitmapURL the path to the image storage location
      */
     private void sendTweet(String bitmapURL) {
