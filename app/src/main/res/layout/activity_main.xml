@@ -14,7 +14,7 @@
 
         <RelativeLayout
             android:id="@+id/assistanceView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="310dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="120dp">
@@ -23,13 +23,14 @@
                 android:id="@+id/visualHeight"
                 android:layout_width="30dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="170dp"
                 android:src="@drawable/marker" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Weather"
+                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -38,6 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="140dp"
                 android:text="Camera"
+                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -46,8 +48,28 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:text="Location"
+                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
+
+            <TextView
+                android:text="Settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:text="Colors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView4"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginStart="295dp"
+                android:layout_centerVertical="true" />
         </RelativeLayout>
 
         <TextView
@@ -80,7 +102,7 @@
             android:layout_alignParentEnd="true"
             android:background="@drawable/rounded_button"
             android:text="Send"
-            android:textColor="#b1ffffff" />
+            android:textColor="#FFFFFF" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -223,4 +245,31 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
     </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="right|end"
+        android:background="#3F037F"
+        android:orientation="vertical">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50px" />
+
+        <TextView
+            android:id="@+id/tw_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose a color"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="50px" />
+
+    </LinearLayout>
+
 </android.support.v4.widget.DrawerLayout>
