@@ -2,6 +2,7 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="se.mah.flunbert.post_it.MainActivity">
@@ -12,25 +13,43 @@
         android:layout_height="match_parent"
         android:background="@drawable/default_background">
 
+        <ImageView
+            android:id="@+id/settingsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/settings_button"
+            android:padding="10dp"
+            android:src="@drawable/settings" />
+
+        <ImageView
+            android:id="@+id/colourButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/colour_button"
+            android:padding="10dp"
+            android:src="@drawable/colour" />
+
         <RelativeLayout
             android:id="@+id/assistanceView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="310dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="150dp"
             android:layout_marginTop="120dp">
 
             <ImageView
                 android:id="@+id/visualHeight"
                 android:layout_width="30dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="170dp"
+                android:layout_marginStart="25dp"
                 android:src="@drawable/marker" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Weather"
-                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -39,7 +58,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="140dp"
                 android:text="Camera"
-                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -48,33 +66,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:text="Location"
-                android:layout_marginStart="150dp"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
-
-            <TextView
-                android:text="settings"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView2"
-                android:textColor="#ffffff"
-                android:textSize="20sp"
-                android:layout_centerVertical="true"
-                android:textAlignment="center"
-                android:textAllCaps="true"
-                android:layout_marginStart="5dp"
-                android:layout_width="15dp" />
-
-            <TextView
-                android:text="colorpicker"
-                android:id="@+id/textView4"
-                android:textColor="#FFFFFF"
-                android:layout_marginStart="330dp"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textAllCaps="true"
-                android:layout_width="15dp" />
         </RelativeLayout>
 
         <TextView
@@ -143,6 +136,7 @@
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/settingsView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
@@ -180,16 +174,17 @@
             android:layout_above="@+id/btnSnap"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center|center_horizontal" />
+
         <Button
             android:id="@+id/logout_button"
-            android:background="@drawable/tw__login_btn"
-            android:textColor="@color/white"
-            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/btnSnap"
             android:layout_centerHorizontal="true"
-            android:layout_gravity="center|center_horizontal" />
+            android:layout_gravity="center|center_horizontal"
+            android:background="@drawable/tw__login_btn"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/fb_button"
@@ -252,6 +247,7 @@
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/colourView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="right|end"
