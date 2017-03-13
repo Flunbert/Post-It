@@ -36,8 +36,8 @@
             android:id="@+id/assistanceView"
             android:layout_width="wrap_content"
             android:layout_height="310dp"
-            android:layout_marginStart="150dp"
-            android:layout_marginTop="120dp">
+            android:layout_marginStart="170dp"
+            android:layout_marginTop="150dp">
 
             <ImageView
                 android:id="@+id/visualHeight"
@@ -114,24 +114,24 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <Button
+        <ImageView
             android:id="@+id/btnSnap"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:background="@drawable/rounded_button"
-            android:text="Snap"
+            android:src="@drawable/camera"
             android:textColor="#b1ffffff" />
 
-        <Button
+        <ImageView
             android:id="@+id/btnSelfie"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:background="@drawable/rounded_button"
-            android:text="Selfie"
+            android:src="@drawable/selfie"
             android:textColor="#b1ffffff" />
     </RelativeLayout>
 

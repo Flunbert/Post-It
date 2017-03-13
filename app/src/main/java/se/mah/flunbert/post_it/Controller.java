@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.provider.MediaStore;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -51,19 +53,15 @@ public class Controller implements SurfaceHolder.Callback {
     private View[] views;
 
     //TODO: Should these exist?
-    private SurfaceView surfaceView;
-    private Button btnSnap;
-    private RelativeLayout defaultView;
-    private RelativeLayout cameraView;
-    private TextView locationView;
-    private TextView weatherView;
-    private Button btnSelfie;
-    private Button btnSend;
-    private ImageView visualHeight;
-    private RelativeLayout assistanceView;
+    private Button twitterLogoutButton, btnSelfie, btnSnap, btnSend;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
+    private RelativeLayout assistanceView, defaultView, cameraView;
+    private ImageView visualHeight, settingsButton, colourButton;
     private TwitterLoginButton twitterLoginButton;
-    private Button twitterLogoutButton;
+    private LinearLayout settingsView, colourView;
+    private TextView locationView, weatherView;
+    private SurfaceView surfaceView;
+    private DrawerLayout drawer;
 
     /**
      * Constructor.
@@ -124,7 +122,11 @@ public class Controller implements SurfaceHolder.Callback {
         facebookSwitch = (Switch) views[12];
         twitterLoginButton = (TwitterLoginButton) views[13];
         twitterLogoutButton = (Button) views[14];
-
+        drawer = (DrawerLayout) mainActivity.findViewById(R.id.drawer);
+        settingsView = (LinearLayout) mainActivity.findViewById(R.id.settingsView);
+        colourView = (LinearLayout) mainActivity.findViewById(R.id.colourView);
+        settingsButton = (ImageView) mainActivity.findViewById(R.id.settingsButton);
+        colourButton = (ImageView) mainActivity.findViewById(R.id.colourButton);
     }
 
     /**
@@ -138,6 +140,19 @@ public class Controller implements SurfaceHolder.Callback {
         btnSend.setOnClickListener(buttonListener);
         assistanceSwitch.setOnCheckedChangeListener(buttonListener);
         twitterLogoutButton.setOnClickListener(buttonListener);
+        //TODO: Their own listeners
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.openDrawer(settingsView);
+            }
+        });
+        colourButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.openDrawer(colourView);
+            }
+        });
     }
 
     /**
@@ -210,10 +225,12 @@ public class Controller implements SurfaceHolder.Callback {
         assistanceView.setVisibility(View.VISIBLE);
         if (twitterSwitch.isChecked()) {
             //TODO: Send to twitter
-            apiController.sendToAPI(APIController.APIs.twitter, path);
+            boolean sent = false;
+            sent = apiController.sendTweet(path);
         }
         if (facebookSwitch.isChecked()) {
             //TODO: Send to facebook
+            apiController.sendToFacebook(image);
         }
         clearScreen();
     }
@@ -274,7 +291,7 @@ public class Controller implements SurfaceHolder.Callback {
      * @param sensor
      * @param value
      */
-    public void sensorTriggered(SensorController.Sensors sensor, float[] value) {
+    public void sensorTriggered(SensorController.Sensors sensor, double value) {
         switch (sensor) {
             case rotation:
                 accelerometerChecks(value);
@@ -322,32 +339,31 @@ public class Controller implements SurfaceHolder.Callback {
      * If device is held up above user, fetch weather from API.
      * If device is held down towards the ground, fetch location form API.
      *
-     * @param value: Values from the rotation sensor
+     * @param angle: Values from the rotation sensor
      */
-    private void accelerometerChecks(float[] value) {
+    private void accelerometerChecks(double angle) {
         if (refreshRate == 3) {
-            visualHeight.setTop(Math.round(value[2] * 50));
+            visualHeight.setTop((int) Math.round(angle));
             refreshRate = 0;
         } else
             refreshRate++;
-
-        if (value[1] > 9.3 && !cameraIsOn && pictureTaken == null) {
+        if (angle >= 60 && angle < 120 && !cameraIsOn && pictureTaken == null) {
             cameraIsOn = true;
             //TODO: Check if should start camera
             startCamera();
             Log.d(TAG, "sensorTriggered: start camera");
-        } else if (value[1] < 9 && cameraIsOn) {
+        } else if ((angle < 60 || angle >= 120) && cameraIsOn) {
             //TODO: Check if should close camera
             cameraIsOn = false;
             pauseCamera();
             Log.d(TAG, "sensorTriggered: pause camera");
-        } else if (value[0] < 1 && value[1] < 1 && value[2] <= -9 && !weatherFetched) {
+        } else if (angle >= 150 && !weatherFetched && angle > 0) {
             //TODO: Check if should fetch weather
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
             apiController.fetchAPI(APIController.APIs.weather, weatherView);
-        } else if (value[0] < 1 && value[1] < 1 && value[2] >= 9 && !locationFetched) {
+        } else if (angle < 30 && !locationFetched && angle > 0) {
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
@@ -390,9 +406,9 @@ public class Controller implements SurfaceHolder.Callback {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
             } else if (view == btnSelfie) {
                 switchCamera();
-            }else if (view == btnSend) {
+            } else if (view == btnSend) {
                 sendImage();
-            }else if(view == twitterLogoutButton){
+            } else if (view == twitterLogoutButton) {
                 apiController.deregisterAPI(APIController.APIs.twitter);
                 twitterLogoutButton.setVisibility(View.GONE);
                 twitterLoginButton.setVisibility(View.VISIBLE);
