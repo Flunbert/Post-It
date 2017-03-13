@@ -61,20 +61,20 @@
                 android:layout_centerVertical="true"
                 android:textAlignment="center"
                 android:textAllCaps="true"
-                android:layout_width="10dp"
-                android:layout_marginStart="10dp"/>
+                android:layout_marginStart="5dp"
+                android:layout_width="15dp" />
 
             <TextView
                 android:text="colorpicker"
                 android:id="@+id/textView4"
                 android:textColor="#FFFFFF"
-                android:layout_marginStart="345dp"
+                android:layout_marginStart="330dp"
                 android:layout_centerVertical="true"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textSize="20sp"
                 android:textAllCaps="true"
-                android:layout_width="10dp" />
+                android:layout_width="15dp" />
         </RelativeLayout>
 
         <TextView
