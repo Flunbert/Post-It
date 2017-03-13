@@ -53,23 +53,28 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:text="Settings"
-                android:layout_width="wrap_content"
+                android:text="settings"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView2"
                 android:textColor="#ffffff"
                 android:textSize="20sp"
-                android:layout_centerVertical="true" />
+                android:layout_centerVertical="true"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:layout_width="10dp"
+                android:layout_marginStart="10dp"/>
 
             <TextView
-                android:text="Colors"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:text="colorpicker"
                 android:id="@+id/textView4"
-                android:textSize="20sp"
                 android:textColor="#FFFFFF"
-                android:layout_marginStart="295dp"
-                android:layout_centerVertical="true" />
+                android:layout_marginStart="345dp"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textAllCaps="true"
+                android:layout_width="10dp" />
         </RelativeLayout>
 
         <TextView
