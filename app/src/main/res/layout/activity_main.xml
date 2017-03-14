@@ -16,7 +16,7 @@
             android:id="@+id/settingsButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="70dp"
             android:background="@drawable/settings_button"
             android:padding="10dp"
             android:src="@drawable/settings" />
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="70dp"
             android:background="@drawable/colour_button"
             android:padding="10dp"
             android:src="@drawable/colour" />
@@ -181,12 +181,11 @@
             android:textColor="@color/white"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/fb_button"
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center_horizontal"
-            android:text="@string/facebook" />
+            android:layout_height="30dp"
+            android:layout_gravity="center|center_horizontal" />
 
         <Space
             android:layout_width="match_parent"

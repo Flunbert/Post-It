@@ -53,11 +53,11 @@ public class Controller implements SurfaceHolder.Callback {
 
     //TODO: Should these exist?
     private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend;
-    private TextView locationView, weatherView, tvWeather, tvLocation;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
     private RelativeLayout assistanceView, defaultView, cameraView;
     private TwitterLoginButton twitterLoginButton;
     private LinearLayout settingsView, colourView;
+    private TextView locationView, weatherView;
     private Button twitterLogoutButton;
     private SurfaceView surfaceView;
     private DrawerLayout drawer;
@@ -105,8 +105,8 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceView = (SurfaceView) mainActivity.findViewById(R.id.cameraHolder);
         defaultView = (RelativeLayout) mainActivity.findViewById(R.id.defaultView);
         cameraView = (RelativeLayout) mainActivity.findViewById(R.id.cameraView);
-        tvWeather = (TextView) mainActivity.findViewById(R.id.ivWeather);
-        tvLocation = (TextView) mainActivity.findViewById(R.id.ivLocation);
+        weatherView = (TextView) mainActivity.findViewById(R.id.ivWeather);
+        locationView = (TextView) mainActivity.findViewById(R.id.ivLocation);
         btnSnap = (ImageView) mainActivity.findViewById(R.id.btnSnap);
         btnSelfie = (ImageView) mainActivity.findViewById(R.id.btnSelfie);
         btnSend = (ImageView) mainActivity.findViewById(R.id.btnSend);

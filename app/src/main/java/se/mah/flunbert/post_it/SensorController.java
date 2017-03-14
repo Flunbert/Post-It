@@ -73,21 +73,23 @@ public class SensorController implements SensorEventListener {
             case Sensor.TYPE_ACCELEROMETER:
                 //TODO: Accelerometer has been fired
                 float[] values = {sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]};
-                float[] qtnValues= new float[4];
-                sensorManager.getQuaternionFromVector(qtnValues,values);
+                float[] qtnValues = new float[4];
+                sensorManager.getQuaternionFromVector(qtnValues, values);
 
-                double ang = Math.atan2(2*(qtnValues[2]*qtnValues[3] + qtnValues[0]*qtnValues[1]),
-                        qtnValues[0]*qtnValues[0] - qtnValues[1]*qtnValues[1] - qtnValues[2]*qtnValues[2] + qtnValues[3]*qtnValues[3]);
+                double ang = Math.atan2(2 * (qtnValues[2] * qtnValues[3] + qtnValues[0] * qtnValues[1]),
+                        qtnValues[0] * qtnValues[0] - qtnValues[1] * qtnValues[1] - qtnValues[2] * qtnValues[2] + qtnValues[3] * qtnValues[3]);
 
-                double angle =  Math.toDegrees(ang);
-                Log.d(TAG, "onSensorChanged: " + angle);
+                double angle = Math.toDegrees(ang);
+//                Log.d(TAG, "onSensorChanged: " + angle);
 
                 controller.sensorTriggered(Sensors.rotation, angle);
                 break;
             case Sensor.TYPE_PROXIMITY:
                 //TODO: Proximity sensor has been fired
-                Log.d(TAG, "onSensorChanged: proximity fired");
-                controller.sensorTriggered(Sensors.proximity, 0);
+                if (sensorEvent.values[0] == 0) {
+                    Log.d(TAG, "onSensorChanged: proximity fired");
+                    controller.sensorTriggered(Sensors.proximity, 0);
+                }
                 break;
         }
     }
