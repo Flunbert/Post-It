@@ -50,28 +50,25 @@ public class Controller implements SurfaceHolder.Callback {
     private Bitmap pictureTaken;
     private byte currentCamera, refreshRate;
     private Camera camera;
-    private View[] views;
 
     //TODO: Should these exist?
-    private Button twitterLogoutButton, btnSelfie, btnSnap, btnSend;
+    private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend;
+    private TextView locationView, weatherView, tvWeather, tvLocation;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
     private RelativeLayout assistanceView, defaultView, cameraView;
-    private ImageView visualHeight, settingsButton, colourButton;
     private TwitterLoginButton twitterLoginButton;
     private LinearLayout settingsView, colourView;
-    private TextView locationView, weatherView;
+    private Button twitterLogoutButton;
     private SurfaceView surfaceView;
     private DrawerLayout drawer;
 
     /**
-     * Constructor.
-     * Initializes variables.
+     * TODO
      *
-     * @param views: An array containing all view objects
+     * @param mainActivity
      */
-    public Controller(MainActivity mainActivity, View[] views) {
+    public Controller(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        this.views = views;
         apiController = new APIController(mainActivity);
         sensorController = new SensorController(this, mainActivity);
         cameraIsOn = false;
@@ -89,8 +86,6 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-
     }
 
     /**
@@ -107,26 +102,26 @@ public class Controller implements SurfaceHolder.Callback {
      */
     private void initViews() {
         //TODO: Correct this
-        btnSnap = (Button) views[0];
-        surfaceView = (SurfaceView) views[1];
-        defaultView = (RelativeLayout) views[2];
-        cameraView = (RelativeLayout) views[3];
-        locationView = (TextView) views[4];
-        weatherView = (TextView) views[5];
-        btnSelfie = (Button) views[6];
-        btnSend = (Button) views[7];
-        visualHeight = (ImageView) views[8];
-        assistanceView = (RelativeLayout) views[9];
-        assistanceSwitch = (Switch) views[10];
-        twitterSwitch = (Switch) views[11];
-        facebookSwitch = (Switch) views[12];
-        twitterLoginButton = (TwitterLoginButton) views[13];
-        twitterLogoutButton = (Button) views[14];
+        surfaceView = (SurfaceView) mainActivity.findViewById(R.id.cameraHolder);
+        defaultView = (RelativeLayout) mainActivity.findViewById(R.id.defaultView);
+        cameraView = (RelativeLayout) mainActivity.findViewById(R.id.cameraView);
+        tvWeather = (TextView) mainActivity.findViewById(R.id.ivWeather);
+        tvLocation = (TextView) mainActivity.findViewById(R.id.ivLocation);
+        btnSnap = (ImageView) mainActivity.findViewById(R.id.btnSnap);
+        btnSelfie = (ImageView) mainActivity.findViewById(R.id.btnSelfie);
+        btnSend = (ImageView) mainActivity.findViewById(R.id.btnSend);
+        visualHeight = (ImageView) mainActivity.findViewById(R.id.visualHeight);
+        assistanceView = (RelativeLayout) mainActivity.findViewById(R.id.assistanceView);
+        assistanceSwitch = (Switch) mainActivity.findViewById(R.id.assistance_switch);
+        twitterSwitch = (Switch) mainActivity.findViewById(R.id.twitter_switch);
+        facebookSwitch = (Switch) mainActivity.findViewById(R.id.facebook_switch);
         drawer = (DrawerLayout) mainActivity.findViewById(R.id.drawer);
         settingsView = (LinearLayout) mainActivity.findViewById(R.id.settingsView);
         colourView = (LinearLayout) mainActivity.findViewById(R.id.colourView);
         settingsButton = (ImageView) mainActivity.findViewById(R.id.settingsButton);
         colourButton = (ImageView) mainActivity.findViewById(R.id.colourButton);
+        twitterLoginButton = (TwitterLoginButton) mainActivity.findViewById(R.id.twitter_login_button);
+        twitterLogoutButton = (Button) mainActivity.findViewById(R.id.twitter_logout_button);
     }
 
     /**

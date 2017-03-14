@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Post-It</string>
+    <string name="connect_to">Connect to</string>
+    <string name="facebook">Facebook</string>
+    <string name="send_to">Send to</string>
+    <string name="twitter">Twitter</string>
+    <string name="assistance_switch">Turn on/off assistance</string>
+    <string name="pick_colour">Choose a color</string>
+    <string name="weather">Weather</string>
+    <string name="camera">Camera</string>
+    <string name="location">Location</string>
 
 </resources>

@@ -7,13 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -22,13 +18,11 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends Activity {
+    private Switch assistanceSwitch, facebookSwitch, twitterSwitch;
+    private TwitterLoginButton twitterLoginButton;
+    private SharedPreferences sharedPreferences;
     private static String TAG = "MainActivity";
     private Controller controller;
-    private SharedPreferences sharedPreferences;
-    private Switch assistanceSwitch;
-    private Switch twitterSwitch;
-    private Switch facebookSwitch;
-    private TwitterLoginButton twitterLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,33 +33,18 @@ public class MainActivity extends Activity {
 
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
-        Button btnSnap = (Button) findViewById(R.id.btnSnap);
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.cameraHolder);
-        RelativeLayout defaultView = (RelativeLayout) findViewById(R.id.defaultView);
-        RelativeLayout cameraView = (RelativeLayout) findViewById(R.id.cameraView);
-        TextView tvWeather = (TextView) findViewById(R.id.ivWeather);
-        TextView tvLocation = (TextView) findViewById(R.id.ivLocation);
-        Button btnSelfie = (Button) findViewById(R.id.btnSelfie);
-        Button btnSend = (Button) findViewById(R.id.btnSend);
-        ImageView visualHeight = (ImageView) findViewById(R.id.visualHeight);
-        //Settings
-        RelativeLayout assistanceView = (RelativeLayout) findViewById(R.id.assistanceView);
-        assistanceSwitch = (Switch) findViewById(R.id.help_switch);
-        twitterSwitch = (Switch) findViewById(R.id.twitter_switch);
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        Button twitterLogoutButton = (Button) findViewById(R.id.twitter_logout_button);
+        assistanceSwitch = (Switch) findViewById(R.id.assistance_switch);
         facebookSwitch = (Switch) findViewById(R.id.facebook_switch);
+        twitterSwitch = (Switch) findViewById(R.id.twitter_switch);
 
-        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.login_button);
-        Button twitterLogoutButton = (Button) findViewById(R.id.logout_button);
         twitterLogoutButton.setText("Logout Twitter");
-        if (Twitter.getSessionManager().getActiveSession() == null) {
+        if (Twitter.getSessionManager().getActiveSession() == null)
             twitterLogoutButton.setVisibility(View.GONE);
-        } else {
+        else
             twitterLoginButton.setVisibility(View.GONE);
-        }
-        View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation,
-                tvWeather, btnSelfie, btnSend, visualHeight, assistanceView, assistanceSwitch,
-                twitterSwitch, facebookSwitch, twitterLoginButton, twitterLogoutButton};
-        controller = new Controller(this, views);
+        controller = new Controller(this);
     }
 
     @Override
