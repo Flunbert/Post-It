@@ -27,6 +27,8 @@ public class SensorController implements SensorEventListener {
 
     public void onPause() {
         sensorManager.unregisterListener(this);
+        sensorList = null;
+        sensorManager = null;
     }
 
     public void onResume() {
