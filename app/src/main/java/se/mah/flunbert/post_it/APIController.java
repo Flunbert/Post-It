@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -20,6 +21,9 @@ import android.util.Log;
 import android.webkit.CookieManager;
 import android.widget.TextView;
 
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -48,6 +52,8 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 
 /**
  * APIController class.
@@ -57,11 +63,12 @@ import retrofit2.Call;
  */
 public class APIController {
     private static String TAG = "APIController";
-    private boolean canUseGps;
+    //private boolean canUseGps;
     private APIStorage apiStorage;
     private MainActivity activity;
     private LocationManager mLocationManager;
     private Location currentLoc;
+    private boolean sentTweet;
 
     public enum APIs {
         facebook, twitter, weather, location
@@ -70,23 +77,12 @@ public class APIController {
     public APIController(MainActivity activity) {
         if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            canUseGps = false;
-        } else canUseGps = true;
+
+        }
         this.activity = activity;
         this.apiStorage = new APIStorage();
-        mLocationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
 
-    }
-
-
-    public boolean registerAPI(APIs api) {
-        switch (api) {
-            case twitter:
-                //authorizeTwitter();
-                return true;
-            default:
-                return false;
-        }
     }
 
     public boolean deregisterAPI(APIs api) {
@@ -117,10 +113,7 @@ public class APIController {
         switch (api) {
             case location:
                 String localLocation = getLocationString();
-                if (localLocation != null) {
-                    Log.v("Got location: ", localLocation);
                     tv.setText(localLocation);
-                }
                 return null;
             case weather:
                 String location = getWeatherLocation();
@@ -133,9 +126,7 @@ public class APIController {
     }
 
     private String getWeatherLocation() {
-        if (currentLoc == null) {
             currentLoc = getLocation();
-        }
         String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
         return weatherLoc;
     }
@@ -144,18 +135,20 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-        String add = "";
-        Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
-        try {
-            List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
-            if (addresses.size() > 0) {
-                add = addresses.get(0).getLocality();
+        if(currentLoc != null) {
+            String add = "";
+            Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
+            try {
+                List<Address> addresses = geoCoder.getFromLocation(currentLoc.getLatitude(), currentLoc.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    add = addresses.get(0).getLocality();
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        return add;
-
+            return add;
+        }else
+            return null;
     }
 
     /**
@@ -164,36 +157,86 @@ public class APIController {
      * @return Location object from the gps
      */
     private Location getLocation() {
-        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+       if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return null;
-        } else {
-            if (canUseGps) {
+       }
                 CurrentLocation listener = new CurrentLocation();
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
                 Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                mLocationManager.removeUpdates(listener);
-                return currentLocation;
+        try {
+            mLocationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
+
+            // getting GPS status
+            boolean isGPSEnabled = mLocationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+            // getting network status
+            boolean isNetworkEnabled = mLocationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                // no network provider is enabled
             } else {
-                return null;
+                boolean canGetLocation = true;
+                if (isNetworkEnabled) {
+                    mLocationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            0,
+                            0, listener);
+                    Log.d("Network", "Network Enabled");
+                    if (mLocationManager != null) {
+                        currentLocation = mLocationManager
+                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        if (currentLocation != null) {
+                           double latitude = currentLocation.getLatitude();
+                           double longitude = currentLocation.getLongitude();
+                        }
+                    }
+                }
+                // if GPS Enabled get lat/long using GPS Services
+                if (isGPSEnabled) {
+                    if (currentLocation == null) {
+                        mLocationManager.requestLocationUpdates(
+                                LocationManager.GPS_PROVIDER,
+                                0,
+                                0, listener);
+                        Log.d("GPS", "GPS Enabled");
+                        if (mLocationManager != null) {
+                            currentLocation = mLocationManager
+                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (currentLocation != null) {
+                                double latitude = currentLocation.getLatitude();
+                                double longitude = currentLocation.getLongitude();
+                            }
+                        }
+                    }
+                }
             }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        mLocationManager.removeUpdates(listener);
+        return currentLocation;
     }
+
 
     /**
      * Method used when information (image) is being sent to an API
      *
-     * @param api    which api is being sent to
-     * @param bitmap the image url
+     * @param image the image url
      */
-    public void sendToAPI(APIs api, final String bitmap) {
-        switch (api) {
-            case twitter:
-                sendTweet(bitmap);
-                return;
-            default:
-                return;
-        }
+    public void sendToFacebook(Bitmap image) {
+        final MyProgressDialog progressDialog = MyProgressDialog.show(activity,"Sending image","processing",true,false,null);
+        SharePhoto photo = new SharePhoto.Builder()
+                .setBitmap(image)
+                .build();
+        SharePhotoContent content = new SharePhotoContent.Builder()
+                .addPhoto(photo)
+                .build();
+        ShareDialog.show(activity,content);
+        progressDialog.dismiss();
+        Log.d(TAG, "sendToFacebook: a Facebook shared content should have been sent by now...");
     }
 
     /**
@@ -215,8 +258,10 @@ public class APIController {
      *
      * @param bitmapURL the path to the image storage location
      */
-    private void sendTweet(String bitmapURL) {
+    public boolean sendTweet(String bitmapURL) {
         final String string = "Sent by Post-it app project!";
+        sentTweet = false;
+        final MyProgressDialog progressDialog = MyProgressDialog.show(activity,"Sending image","processing",true,false,null);
 
         TwitterSession session = Twitter.getSessionManager().getActiveSession();
         if (session == null) {
@@ -232,6 +277,7 @@ public class APIController {
                         }
                     });
             AlertDialog dialog = builder.create();
+            progressDialog.dismiss();
             dialog.show();
         } else {
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient(session);
@@ -258,7 +304,9 @@ public class APIController {
                                 }
                             });
                     AlertDialog dialog = builder.create();
+                    progressDialog.dismiss();
                     dialog.show();
+
                 }
 
                 @Override
@@ -286,8 +334,10 @@ public class APIController {
                                         }
                                     });
                             AlertDialog dialog = builder.create();
+                            progressDialog.dismiss();
                             dialog.show();
-                            Log.e("TwitterResult", tweet.text);
+                            Log.e("TwitterResult ", tweet.text);
+                            sentTweet = true;
                         }
 
                         /**
@@ -308,6 +358,7 @@ public class APIController {
                                         }
                                     });
                             AlertDialog dialog = builder.create();
+                            progressDialog.dismiss();
                             dialog.show();
                             Log.e("TwitterException", exception.getMessage());
                         }
@@ -315,27 +366,9 @@ public class APIController {
                 }
             });
         }
+        return sentTweet;
     }
 
-/*
-        private boolean authorizeTwitter() {
-            //TODO: Kanske kan rensas undan komplett?
-            TwitterAuthConfig authConfig = new TwitterAuthConfig(apiStorage.TWITTER_KEY, apiStorage.TWITTER_SECRET);
-            Fabric.with(activity, new Twitter(authConfig));
-            new Callback<TwitterSession>() {
-                @Override
-                public void success(Result<TwitterSession> result) {
-                    TwitterSession session = result.data;
-                    Toast.makeText(activity, "Connected to twitter!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void failure(TwitterException exception) {
-                    Toast.makeText(activity, "Failure to connect", Toast.LENGTH_SHORT).show();
-                }
-            };
-            return true;
-        }*/
 
     private class APIStorage {
         private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
@@ -359,6 +392,7 @@ public class APIController {
             Log.v("Location Changed", latitude + " and " + longitude);
             mLocationManager.removeUpdates(this);
 
+
         }
 
         @Override
@@ -376,6 +410,7 @@ public class APIController {
 
         }
     }
+
 
     private class WeatherCall extends Thread {
         private String weatherCallLocation;

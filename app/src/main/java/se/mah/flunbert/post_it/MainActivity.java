@@ -15,6 +15,11 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -29,12 +34,15 @@ public class MainActivity extends Activity {
     private Switch twitterSwitch;
     private Switch facebookSwitch;
     private TwitterLoginButton twitterLoginButton;
+    private CallbackManager callbackManager;
+    private LoginButton facebookLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig = new TwitterAuthConfig("9Wfs06IF2gRS7x7DnNiEBCmqZ", "ZycIA5Eyoet3zatWRuTsJ2yRDHUb4K2j7vpG2gIC1S2qZdcAh8");
         Fabric.with(this, new Twitter(authConfig));
+        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
@@ -62,6 +70,26 @@ public class MainActivity extends Activity {
         } else {
             twitterLoginButton.setVisibility(View.GONE);
         }
+
+        facebookLoginButton = (LoginButton)findViewById(R.id.fb_login_button);
+        facebookLoginButton.setReadPermissions("email");
+
+        facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
         View[] views = new View[]{btnSnap, surfaceView, defaultView, cameraView, tvLocation,
                 tvWeather, btnSelfie, btnSend, visualHeight, assistanceView, assistanceSwitch,
                 twitterSwitch, facebookSwitch, twitterLoginButton, twitterLogoutButton};
@@ -93,11 +121,19 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, resultCode, data);
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
-        if (data.getExtras().containsKey("screen_name")) {
+        if (requestCode == TwitterAuthConfig.DEFAULT_AUTH_REQUEST_CODE) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     twitterSwitch.setChecked(true);
+                }
+            });
+        }else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    facebookSwitch.setChecked(true);
                 }
             });
         }

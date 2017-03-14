@@ -191,12 +191,13 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center|center_horizontal" />
 
-        <Button
-            android:id="@+id/fb_button"
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_gravity="center|center_horizontal"
-            android:text="Facebook" />
+
+            />
 
         <Space
             android:layout_width="match_parent"

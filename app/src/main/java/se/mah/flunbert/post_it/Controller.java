@@ -210,10 +210,12 @@ public class Controller implements SurfaceHolder.Callback {
         assistanceView.setVisibility(View.VISIBLE);
         if (twitterSwitch.isChecked()) {
             //TODO: Send to twitter
-            apiController.sendToAPI(APIController.APIs.twitter, path);
+            boolean sent = false;
+                sent = apiController.sendTweet(path);
         }
         if (facebookSwitch.isChecked()) {
             //TODO: Send to facebook
+            apiController.sendToFacebook(image);
         }
         clearScreen();
     }
@@ -274,7 +276,7 @@ public class Controller implements SurfaceHolder.Callback {
      * @param sensor
      * @param value
      */
-    public void sensorTriggered(SensorController.Sensors sensor, float[] value) {
+    public void sensorTriggered(SensorController.Sensors sensor, double value) {
         switch (sensor) {
             case rotation:
                 accelerometerChecks(value);
@@ -322,32 +324,31 @@ public class Controller implements SurfaceHolder.Callback {
      * If device is held up above user, fetch weather from API.
      * If device is held down towards the ground, fetch location form API.
      *
-     * @param value: Values from the rotation sensor
+     * @param angle: Values from the rotation sensor
      */
-    private void accelerometerChecks(float[] value) {
+    private void accelerometerChecks(double angle) {
         if (refreshRate == 3) {
-            visualHeight.setTop(Math.round(value[2] * 50));
-            refreshRate = 0;
+        visualHeight.setTop((int)Math.round(angle));
+        refreshRate = 0;
         } else
             refreshRate++;
-
-        if (value[1] > 9.3 && !cameraIsOn && pictureTaken == null) {
+        if(angle>= 60 && angle<120 && !cameraIsOn && pictureTaken == null){
             cameraIsOn = true;
             //TODO: Check if should start camera
             startCamera();
             Log.d(TAG, "sensorTriggered: start camera");
-        } else if (value[1] < 9 && cameraIsOn) {
+        } else if((angle < 60 || angle>=120) && cameraIsOn){
             //TODO: Check if should close camera
             cameraIsOn = false;
             pauseCamera();
             Log.d(TAG, "sensorTriggered: pause camera");
-        } else if (value[0] < 1 && value[1] < 1 && value[2] <= -9 && !weatherFetched) {
+        } else if(angle>=150 && !weatherFetched && angle>0){
             //TODO: Check if should fetch weather
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
             apiController.fetchAPI(APIController.APIs.weather, weatherView);
-        } else if (value[0] < 1 && value[1] < 1 && value[2] >= 9 && !locationFetched) {
+        }   else if(angle<30 && !locationFetched && angle>0){
             //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
