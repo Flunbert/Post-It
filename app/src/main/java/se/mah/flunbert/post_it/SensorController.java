@@ -7,6 +7,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -70,8 +71,12 @@ public class SensorController implements SensorEventListener {
         sensorManager = (SensorManager) activity.getSystemService(Context.SENSOR_SERVICE);
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if (sensor != null) sensorList.add(sensor);
+        else
+            Toast.makeText(activity, "Proximity sensor is not available on this device", Toast.LENGTH_SHORT).show();
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         if (sensor != null) sensorList.add(sensor);
+        else
+            Toast.makeText(activity, "Game Rotation Vector sensor is not available on this device", Toast.LENGTH_SHORT).show();
 
         for (Sensor temp : sensorList)
             sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
