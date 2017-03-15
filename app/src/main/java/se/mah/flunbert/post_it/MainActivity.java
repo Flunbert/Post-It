@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.IntegerRes;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,7 +36,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TwitterAuthConfig authConfig = new TwitterAuthConfig("9Wfs06IF2gRS7x7DnNiEBCmqZ", "ZycIA5Eyoet3zatWRuTsJ2yRDHUb4K2j7vpG2gIC1S2qZdcAh8");
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(String.valueOf(R.string.twitter_key), String.valueOf(R.string.twitter_secret));
         Fabric.with(this, new Twitter(authConfig));
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);

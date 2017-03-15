@@ -24,6 +24,7 @@ import android.webkit.CookieManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.share.model.SharePhoto;
 import com.facebook.share.model.SharePhotoContent;
@@ -119,11 +120,17 @@ public class APIController {
                 if(localLocation!=null) {
                     tv.setText(localLocation);
                     layout.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(activity,"Location couldn't be collected!",Toast.LENGTH_LONG).show();
                 }
                 return null;
             case weather:
                 String location = getWeatherLocation();
-                new WeatherCall(location, tv, layout).start();
+                if(location!=null) {
+                    new WeatherCall(location, tv, layout).start();
+                }else{
+                    Toast.makeText(activity,"Location couldn't be collected!",Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 return null;
@@ -456,6 +463,7 @@ public class APIController {
                     urlConnection.disconnect();
                 }
             } catch (Exception e) {
+                Toast.makeText(activity,"Weather couldn't be aquired",Toast.LENGTH_LONG).show();
                 Log.e("ERROR", e.getMessage(), e);
             }
         }
