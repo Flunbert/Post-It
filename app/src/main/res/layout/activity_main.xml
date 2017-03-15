@@ -20,35 +20,25 @@ g
             android:background="@drawable/settings_button"
             android:padding="10dp"
             android:src="@drawable/settings"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="false" />
 
         <ImageView
             android:id="@+id/colourButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_marginTop="70dp"
             android:background="@drawable/colour_button"
             android:padding="10dp"
             android:src="@drawable/colour"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="false"
+            android:layout_alignParentEnd="true" />
+
         <RelativeLayout
             android:id="@+id/assistanceView"
             android:layout_width="match_parent"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_height="400dp">
-
-            <TextView
-                android:text="Sweep your hand across to reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView4"
-                android:textSize="20sp"
-                android:textColor="#81ffffff"
-                android:textAlignment="center"
-                android:layout_centerHorizontal="true"
-                android:textAllCaps="false" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -87,6 +77,18 @@ g
                     android:textSize="20sp" />
             </RelativeLayout>
 
+            <TextView
+                android:text="Sweep your hand across to the screen reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView4"
+                android:textSize="18sp"
+                android:textColor="#81ffffff"
+                android:textAlignment="center"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:textAllCaps="false" />
+
         </RelativeLayout>
 
         <LinearLayout
@@ -109,7 +111,8 @@ g
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
-        </LinearLayout>
+
+    </LinearLayout>
 
         <LinearLayout
             android:id="@+id/locationView"
