@@ -10,7 +10,7 @@
         android:id="@+id/defaultView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/default_background">>
+        android:background="@drawable/default_background">
 
         <ImageView
             android:id="@+id/colourButton"
@@ -32,65 +32,64 @@
             android:background="@drawable/settings_button"
             android:padding="10dp"
             android:src="@drawable/settings" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/assistanceView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="310dp"
+            android:id="@+id/assistanceView"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true">
 
-            <ImageView
-                android:id="@+id/visualHeight"
-                android:layout_width="30dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="25dp"
-                android:src="@drawable/marker" />
-
-            <TextView
+            <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/weather"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:layout_height="310dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:id="@+id/visualHeight"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="25dp"
+                    android:src="@drawable/marker" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/weather"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="140dp"
+                    android:text="@string/camera"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:text="@string/location"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+            </RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="140dp"
-                android:text="@string/camera"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
-
-            <TextView
+                android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:text="@string/location"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp" />
+                android:layout_centerHorizontal="true"
+                android:paddingBottom="90dp"
+                android:text="Sweep your hand across the screen for reset"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="#81ffffff"
+                android:textSize="18sp" />
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:text="Sweep your hand across the screen for reset"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="#81ffffff"
-            android:textSize="18sp"
-            android:paddingBottom="90dp" />
-
 
         <LinearLayout
             android:id="@+id/weatherView"
@@ -133,8 +132,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
 
         <ImageView
             android:id="@+id/btnSend"
