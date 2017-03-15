@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/default_background">
-
+g
         <ImageView
             android:id="@+id/settingsButton"
             android:layout_width="wrap_content"
@@ -32,7 +32,6 @@
             android:padding="10dp"
             android:src="@drawable/colour"
             android:layout_centerVertical="true" />
-
         <RelativeLayout
             android:id="@+id/assistanceView"
             android:layout_width="match_parent"
@@ -94,16 +93,6 @@
             android:id="@+id/weatherView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
-            android:padding="5dp"
-            android:textAlignment="textEnd"
-            android:textColor="#81ffffff"
-            android:textSize="40sp"
-            android:visibility="invisible" />
-=======
-            android:background="#10ffffff"
-            android:visibility="invisible">
->>>>>>> origin/main
 
             <TextView
                 android:id="@+id/tvWeather"
@@ -127,16 +116,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-<<<<<<< HEAD
-            android:padding="5dp"
-            android:textColor="#81ffffff"
-            android:textSize="40sp"
-            android:visibility="invisible" />
-=======
-            android:background="#10ffffff"
-            android:visibility="invisible">
 
-            <TextView
+        <TextView
                 android:id="@+id/tvLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -144,7 +125,6 @@
                 android:textColor="#81ffffff"
                 android:textSize="40sp" />
         </LinearLayout>
->>>>>>> origin/main
 
         <ImageView
             android:id="@+id/btnSend"
