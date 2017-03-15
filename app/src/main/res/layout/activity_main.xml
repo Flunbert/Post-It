@@ -88,7 +88,8 @@
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="#81ffffff"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:paddingBottom="90dp" />
 
 
         <LinearLayout
