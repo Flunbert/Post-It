@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -18,7 +19,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.webkit.CookieManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.facebook.share.model.SharePhoto;
@@ -108,16 +112,17 @@ public class APIController {
      * @param api
      * @return JSON object
      */
-    public String fetchAPI(APIs api, TextView tv) {
+    public String fetchAPI(APIs api, TextView tv, LinearLayout layout) {
 
         switch (api) {
             case location:
                 String localLocation = getLocationString();
-                    tv.setText(localLocation);
+                tv.setText(localLocation);
+                layout.setVisibility(View.VISIBLE);
                 return null;
             case weather:
                 String location = getWeatherLocation();
-                new WeatherCall(location, tv).start();
+                new WeatherCall(location, tv, layout).start();
                 break;
             default:
                 return null;
@@ -126,7 +131,7 @@ public class APIController {
     }
 
     private String getWeatherLocation() {
-            currentLoc = getLocation();
+        currentLoc = getLocation();
         String weatherLoc = "" + currentLoc.getLatitude() + "," + currentLoc.getLongitude();
         return weatherLoc;
     }
@@ -135,7 +140,7 @@ public class APIController {
         if (currentLoc == null) {
             currentLoc = getLocation();
         }
-        if(currentLoc != null) {
+        if (currentLoc != null) {
             String add = "";
             Geocoder geoCoder = new Geocoder(activity, Locale.getDefault());
             try {
@@ -147,7 +152,7 @@ public class APIController {
                 e1.printStackTrace();
             }
             return add;
-        }else
+        } else
             return null;
     }
 
@@ -157,12 +162,12 @@ public class APIController {
      * @return Location object from the gps
      */
     private Location getLocation() {
-       if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (activity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-       }
-                CurrentLocation listener = new CurrentLocation();
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-                Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+        CurrentLocation listener = new CurrentLocation();
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+        Location currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         try {
             mLocationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
 
@@ -188,8 +193,8 @@ public class APIController {
                         currentLocation = mLocationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                         if (currentLocation != null) {
-                           double latitude = currentLocation.getLatitude();
-                           double longitude = currentLocation.getLongitude();
+                            double latitude = currentLocation.getLatitude();
+                            double longitude = currentLocation.getLongitude();
                         }
                     }
                 }
@@ -227,14 +232,14 @@ public class APIController {
      * @param image the image url
      */
     public void sendToFacebook(Bitmap image) {
-        final MyProgressDialog progressDialog = MyProgressDialog.show(activity,"Sending image","processing",true,false,null);
+        final MyProgressDialog progressDialog = MyProgressDialog.show(activity, "Sending image", "processing", true, false, null);
         SharePhoto photo = new SharePhoto.Builder()
                 .setBitmap(image)
                 .build();
         SharePhotoContent content = new SharePhotoContent.Builder()
                 .addPhoto(photo)
                 .build();
-        ShareDialog.show(activity,content);
+        ShareDialog.show(activity, content);
         progressDialog.dismiss();
         Log.d(TAG, "sendToFacebook: a Facebook shared content should have been sent by now...");
     }
@@ -261,7 +266,7 @@ public class APIController {
     public boolean sendTweet(String bitmapURL) {
         final String string = "Sent by Post-it app project!";
         sentTweet = false;
-        final MyProgressDialog progressDialog = MyProgressDialog.show(activity,"Sending image","processing",true,false,null);
+        final MyProgressDialog progressDialog = MyProgressDialog.show(activity, "Sending image", "processing", true, false, null);
 
         TwitterSession session = Twitter.getSessionManager().getActiveSession();
         if (session == null) {
@@ -415,11 +420,12 @@ public class APIController {
     private class WeatherCall extends Thread {
         private String weatherCallLocation;
         private TextView tv;
+        private LinearLayout layout;
 
-        public WeatherCall(String location, TextView tv) {
+        public WeatherCall(String location, TextView tv, LinearLayout layout) {
             this.weatherCallLocation = location;
-
             this.tv = tv;
+            this.layout = layout;
         }
 
         @Override
@@ -440,12 +446,17 @@ public class APIController {
                     Log.d("CURRENT TEMP", json.getJSONObject("current").getString("temp_c"));
                     Log.d("WEATHER INFORMATION: ", "" + stringBuilder.toString());
 
+                    URL weatherURL = new URL("http:" + json.getJSONObject("current").getJSONObject("condition").getString("icon"));
+                    final Bitmap weatherImage = BitmapFactory.decodeStream(weatherURL.openConnection().getInputStream());
+
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                tv.setText(json.getJSONObject("current").getString("temp_c") + "°C\n" +
-                                        json.getJSONObject("current").getJSONObject("condition").getString("text"));
+                                tv.setText(json.getJSONObject("current").getString("temp_c").concat("°C"));
+                                ImageView weatherView = (ImageView) layout.findViewById(R.id.ivWeather);
+                                weatherView.setImageBitmap(weatherImage);
+                                layout.setVisibility(View.VISIBLE);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
