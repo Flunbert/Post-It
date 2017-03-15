@@ -41,16 +41,15 @@
             android:layout_height="400dp">
 
             <TextView
-                android:text="Drawable placeholder"
+                android:text="Sweep your hand across to reset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/textView4"
                 android:textSize="20sp"
-                android:textStyle="normal|bold"
-                android:textColor="#ffffff"
+                android:textColor="#81ffffff"
                 android:textAlignment="center"
                 android:layout_centerHorizontal="true"
-                android:textAllCaps="true" />
+                android:textAllCaps="false" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -95,7 +94,6 @@
             android:id="@+id/ivWeather"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#10ffffff"
             android:padding="5dp"
             android:textAlignment="textEnd"
             android:textColor="#81ffffff"
@@ -107,7 +105,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="#10ffffff"
             android:padding="5dp"
             android:textColor="#81ffffff"
             android:textSize="40sp"
