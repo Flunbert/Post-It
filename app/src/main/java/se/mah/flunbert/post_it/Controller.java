@@ -43,7 +43,7 @@ public class Controller implements SurfaceHolder.Callback {
     private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
     private RelativeLayout assistanceView, defaultView, cameraView;
-    private boolean cameraIsOn, weatherFetched, locationFetched;
+    private boolean cameraIsOn, weatherFetched, locationFetched, shouldStartCamera;
     private static final String TAG = "Controller";
     private Camera.ShutterCallback shutterCallback;
     private TwitterLoginButton twitterLoginButton;
@@ -52,7 +52,7 @@ public class Controller implements SurfaceHolder.Callback {
     private Camera.PictureCallback rawCallback;
     private TextView locationView, weatherView, tvPreviewColour;
     private SensorController sensorController;
-    private byte currentCamera, refreshRate;
+    private byte currentCamera, refreshRate, cameraDelay;
     private APIController apiController;
     private SurfaceHolder surfaceHolder;
     private Button twitterLogoutButton;
@@ -78,6 +78,7 @@ public class Controller implements SurfaceHolder.Callback {
         refreshRate = 0;
         weatherFetched = false;
         locationFetched = false;
+        cameraDelay = 0;
         pictureTaken = null;
 
         initViews();
@@ -291,7 +292,7 @@ public class Controller implements SurfaceHolder.Callback {
     public void sensorTriggered(SensorController.Sensors sensor, double value) {
         switch (sensor) {
             case rotation:
-                accelerometerChecks(value);
+                angleChecks(value);
                 break;
             case proximity:
                 clearScreen();
@@ -337,27 +338,37 @@ public class Controller implements SurfaceHolder.Callback {
      *
      * @param angle: Value from the rotation sensor
      */
-    private void accelerometerChecks(double angle) {
+    private void angleChecks(double angle) {
+        shouldStartCamera = false;
         if (refreshRate == 3) {
             visualHeight.setTop((int) Math.round(angle));
             refreshRate = 0;
         } else
             refreshRate++;
 
-        if (angle >= 60 && angle < 120 && !cameraIsOn && pictureTaken == null) {
-            cameraIsOn = true;
-            startCamera();
-            Log.d(TAG, "sensorTriggered: start camera");
-        } else if ((angle < 60 || angle >= 120) && cameraIsOn) {
+        if (angle >= 80 && angle < 100 && !cameraIsOn && pictureTaken == null) {
+            cameraDelay++;
+            Log.d(TAG, "angleChecks: ");
+            if (cameraDelay == 80) {
+                shouldStartCamera = true;
+                cameraDelay = 0;
+            }
+            if (shouldStartCamera) {
+                cameraIsOn = true;
+                startCamera();
+                Log.d(TAG, "sensorTriggered: start camera");
+            }
+        } else if ((angle < 70 || angle >= 110) && cameraIsOn) {
+            cameraDelay = 0;
             cameraIsOn = false;
             pauseCamera();
             Log.d(TAG, "sensorTriggered: pause camera");
-        } else if (angle >= 150 && !weatherFetched && angle > 0) {
+        } else if (angle >= 165 && !weatherFetched && angle > 0) {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
             apiController.fetchAPI(APIController.APIs.weather, weatherView);
-        } else if (angle < 30 && !locationFetched && angle > 0) {
+        } else if (angle < 15 && !locationFetched && angle > 0) {
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
             locationView.setVisibility(View.VISIBLE);
