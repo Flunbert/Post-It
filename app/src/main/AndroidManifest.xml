@@ -37,6 +37,7 @@
             android:name="io.fabric.ApiKey"
             android:value="a28210cda33ddd7edf88b4dcfc0ac107e916a334" />
     </application>
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- Permission - Internet Connect -->
     <uses-permission android:name="android.permission.INTERNET" />
 

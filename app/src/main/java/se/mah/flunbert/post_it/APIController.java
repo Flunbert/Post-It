@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -74,6 +75,7 @@ public class APIController {
     private Location currentLoc;
     private boolean sentTweet;
     private final String WEATHER_KEY = "56fc4dd72aef4a05b9780638172802";
+    private Vibrator vibrator;
 
     public enum APIs {
         facebook, twitter, weather, location
@@ -84,8 +86,13 @@ public class APIController {
             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
         }
+        if(activity.checkSelfPermission(Manifest.permission.VIBRATE)!= PackageManager.PERMISSION_GRANTED){
+            activity.requestPermissions(new String[]{Manifest.permission.VIBRATE
+            }, 1);
+        }
         this.activity = activity;
         mLocationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
+        vibrator = (Vibrator) activity.getSystemService(activity.VIBRATOR_SERVICE);
 
     }
 
@@ -119,6 +126,7 @@ public class APIController {
                 String localLocation = getLocationString();
                 if(localLocation!=null) {
                     tv.setText(localLocation);
+                    vibrator.vibrate(500);
                     layout.setVisibility(View.VISIBLE);
                 }else {
                     Toast.makeText(activity,"Location couldn't be collected!",Toast.LENGTH_LONG).show();
@@ -127,6 +135,7 @@ public class APIController {
             case weather:
                 String location = getWeatherLocation();
                 if(location!=null) {
+                    vibrator.vibrate(500);
                     new WeatherCall(location, tv, layout).start();
                 }else{
                     Toast.makeText(activity,"Location couldn't be collected!",Toast.LENGTH_LONG).show();
