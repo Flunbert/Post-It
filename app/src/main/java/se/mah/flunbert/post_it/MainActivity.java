@@ -47,10 +47,14 @@ public class MainActivity extends Activity {
         twitterSwitch = (Switch) findViewById(R.id.twitter_switch);
 
         twitterLogoutButton.setText("Logout Twitter");
-        if (Twitter.getSessionManager().getActiveSession() == null)
+        if (Twitter.getSessionManager().getActiveSession() == null) {
             twitterLogoutButton.setVisibility(View.GONE);
-        else
+            twitterSwitch.setEnabled(true);
+        }
+        else {
             twitterLoginButton.setVisibility(View.GONE);
+            twitterSwitch.setEnabled(false);
+        }
         LoginButton facebookLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         facebookLoginButton.setReadPermissions("email");
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -87,18 +91,22 @@ public class MainActivity extends Activity {
         sharedPreferences = getPreferences(Context.MODE_PRIVATE);
         assistanceSwitch.setChecked(sharedPreferences.getBoolean("assistanceSwitch", true));
         twitterSwitch.setChecked(sharedPreferences.getBoolean("twitterSwitch", false));
+        twitterSwitch.setEnabled(sharedPreferences.getBoolean("twitterSwitch", false));
         facebookSwitch.setChecked(sharedPreferences.getBoolean("facebookSwitch", false));
+        facebookSwitch.setEnabled(sharedPreferences.getBoolean("facebookSwitch",false));
         controller.onResume();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, resultCode, data);
-        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 140) {
+            twitterLoginButton.onActivityResult(requestCode, resultCode, data);
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    twitterSwitch.setEnabled(true);
                     twitterSwitch.setChecked(true);
                 }
             });
@@ -107,6 +115,7 @@ public class MainActivity extends Activity {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    facebookSwitch.setEnabled(true);
                     facebookSwitch.setChecked(true);
                 }
             });

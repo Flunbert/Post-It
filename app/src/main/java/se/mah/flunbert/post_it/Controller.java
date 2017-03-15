@@ -62,6 +62,8 @@ public class Controller implements SurfaceHolder.Callback {
     private Bitmap pictureTaken;
     private DrawerLayout drawer;
     private Camera camera;
+    private boolean loadingCamera = false;
+    private MyProgressDialog pDLoadingCamerafinal;
 
     /**
      * Constructor.
@@ -97,7 +99,12 @@ public class Controller implements SurfaceHolder.Callback {
     private void initPermissions() {
         if (mainActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             mainActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        if (mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mainActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        }
     }
+
 
     /**
      * Initializes views.
@@ -342,6 +349,7 @@ public class Controller implements SurfaceHolder.Callback {
      * @param angle: Value from the rotation sensor
      */
     private void angleChecks(double angle) {
+        Log.d(TAG, "angleChecks: " + angle);
         shouldStartCamera = false;
         if (refreshRate == 3) {
             visualHeight.setTop((int) Math.round(angle));
@@ -350,21 +358,33 @@ public class Controller implements SurfaceHolder.Callback {
             refreshRate++;
 
         if (angle >= 80 && angle < 100 && !cameraIsOn && pictureTaken == null) {
+            if(!loadingCamera && !cameraIsOn){
+                pDLoadingCamerafinal = MyProgressDialog.show(mainActivity, "Loading Camera", "Loading", true, false, null);
+                loadingCamera = true;
+            }
             cameraDelay++;
-            if (cameraDelay == 80) {
+            if (cameraDelay == 40) {
                 shouldStartCamera = true;
                 cameraDelay = 0;
             }
             if (shouldStartCamera) {
+                pDLoadingCamerafinal.dismiss();
+                loadingCamera=false;
                 cameraIsOn = true;
                 startCamera();
                 Log.d(TAG, "sensorTriggered: start camera");
             }
-        } else if ((angle <= 70 || angle >= 110) && cameraIsOn) {
-            cameraDelay = 0;
-            cameraIsOn = false;
-            pauseCamera();
-            Log.d(TAG, "sensorTriggered: pause camera");
+        } else if ((angle <= 70 || angle >= 110) && (cameraIsOn || loadingCamera)) {
+            if(loadingCamera){
+                pDLoadingCamerafinal.dismiss();
+                loadingCamera=false;
+                cameraDelay = 0;
+            }else {
+                cameraDelay = 0;
+                cameraIsOn = false;
+                pauseCamera();
+                Log.d(TAG, "sensorTriggered: pause camera");
+            }
         } else if (angle >= 165 && !weatherFetched && angle > 0) {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
@@ -422,6 +442,7 @@ public class Controller implements SurfaceHolder.Callback {
                 twitterLogoutButton.setVisibility(View.GONE);
                 twitterLoginButton.setVisibility(View.VISIBLE);
                 twitterSwitch.setChecked(false);
+                twitterSwitch.setEnabled(false);
             }
         }
 
