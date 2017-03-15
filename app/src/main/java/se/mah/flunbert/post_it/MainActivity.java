@@ -32,11 +32,13 @@ public class MainActivity extends Activity {
     private CallbackManager callbackManager;
     private Controller controller;
     private boolean loggedInFb;
+    private TwitterApiHolder twApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TwitterAuthConfig authConfig = new TwitterAuthConfig(String.valueOf(R.string.twitter_key), String.valueOf(R.string.twitter_secret));
+        twApi = new TwitterApiHolder();
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(twApi.TWITTERKEY,twApi.TWITTERSECRET);
         Fabric.with(this, new Twitter(authConfig));
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_main);
