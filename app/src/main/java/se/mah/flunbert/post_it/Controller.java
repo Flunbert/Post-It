@@ -40,17 +40,17 @@ import java.io.IOException;
  * @since 25/2/2017
  */
 public class Controller implements SurfaceHolder.Callback {
-    private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend;
+    private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend, ivWeather;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
     private RelativeLayout assistanceView, defaultView, cameraView;
     private boolean cameraIsOn, weatherFetched, locationFetched, shouldStartCamera;
     private static final String TAG = "Controller";
     private Camera.ShutterCallback shutterCallback;
     private TwitterLoginButton twitterLoginButton;
-    private LinearLayout settingsView, colourView;
+    private LinearLayout settingsView, colourView, weatherView, locationView;
     private Camera.PictureCallback jpegCallback;
     private Camera.PictureCallback rawCallback;
-    private TextView locationView, weatherView, tvPreviewColour;
+    private TextView tvLocation, tvWeather, tvPreviewColour;
     private SensorController sensorController;
     private byte currentCamera, refreshRate, cameraDelay;
     private APIController apiController;
@@ -106,8 +106,8 @@ public class Controller implements SurfaceHolder.Callback {
         surfaceView = (SurfaceView) mainActivity.findViewById(R.id.cameraHolder);
         defaultView = (RelativeLayout) mainActivity.findViewById(R.id.defaultView);
         cameraView = (RelativeLayout) mainActivity.findViewById(R.id.cameraView);
-        weatherView = (TextView) mainActivity.findViewById(R.id.ivWeather);
-        locationView = (TextView) mainActivity.findViewById(R.id.ivLocation);
+        tvWeather = (TextView) mainActivity.findViewById(R.id.tvWeather);
+        tvLocation = (TextView) mainActivity.findViewById(R.id.tvLocation);
         btnSnap = (ImageView) mainActivity.findViewById(R.id.btnSnap);
         btnSelfie = (ImageView) mainActivity.findViewById(R.id.btnSelfie);
         btnSend = (ImageView) mainActivity.findViewById(R.id.btnSend);
@@ -125,6 +125,9 @@ public class Controller implements SurfaceHolder.Callback {
         twitterLogoutButton = (Button) mainActivity.findViewById(R.id.twitter_logout_button);
         colourPicker = (ColorPicker) mainActivity.findViewById(R.id.colourPicker);
         tvPreviewColour = (TextView) mainActivity.findViewById(R.id.tvPreviewColour);
+        weatherView = (LinearLayout) mainActivity.findViewById(R.id.weatherView);
+        ivWeather = (ImageView) mainActivity.findViewById(R.id.ivWeather);
+        locationView = (LinearLayout) mainActivity.findViewById(R.id.locationView);
 
         colourPicker.setOldCenterColor(Color.WHITE);
     }
@@ -154,8 +157,8 @@ public class Controller implements SurfaceHolder.Callback {
         colourPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
             @Override
             public void onColorChanged(int color) {
-                weatherView.setTextColor(colourPicker.getColor());
-                locationView.setTextColor(colourPicker.getColor());
+                tvWeather.setTextColor(colourPicker.getColor());
+                tvLocation.setTextColor(colourPicker.getColor());
                 tvPreviewColour.setTextColor(colourPicker.getColor());
             }
         });
@@ -348,7 +351,6 @@ public class Controller implements SurfaceHolder.Callback {
 
         if (angle >= 80 && angle < 100 && !cameraIsOn && pictureTaken == null) {
             cameraDelay++;
-            Log.d(TAG, "angleChecks: ");
             if (cameraDelay == 80) {
                 shouldStartCamera = true;
                 cameraDelay = 0;
@@ -358,7 +360,7 @@ public class Controller implements SurfaceHolder.Callback {
                 startCamera();
                 Log.d(TAG, "sensorTriggered: start camera");
             }
-        } else if ((angle < 70 || angle >= 110) && cameraIsOn) {
+        } else if ((angle <= 70 || angle >= 110) && cameraIsOn) {
             cameraDelay = 0;
             cameraIsOn = false;
             pauseCamera();
@@ -366,13 +368,11 @@ public class Controller implements SurfaceHolder.Callback {
         } else if (angle >= 165 && !weatherFetched && angle > 0) {
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
-            weatherView.setVisibility(View.VISIBLE);
-            apiController.fetchAPI(APIController.APIs.weather, weatherView);
+            apiController.fetchAPI(APIController.APIs.weather, tvWeather, weatherView);
         } else if (angle < 15 && !locationFetched && angle > 0) {
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
-            locationView.setVisibility(View.VISIBLE);
-            apiController.fetchAPI(APIController.APIs.location, locationView);
+            apiController.fetchAPI(APIController.APIs.location, tvLocation, locationView);
         }
     }
 

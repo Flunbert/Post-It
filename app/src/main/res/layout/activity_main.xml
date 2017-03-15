@@ -91,27 +91,46 @@
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/ivWeather"
+        <LinearLayout
+            android:id="@+id/weatherView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#10ffffff"
-            android:padding="5dp"
-            android:textAlignment="textEnd"
-            android:textColor="#81ffffff"
-            android:textSize="40sp"
-            android:visibility="invisible" />
+            android:visibility="invisible">
 
-        <TextView
-            android:id="@+id/ivLocation"
+            <TextView
+                android:id="@+id/tvWeather"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:padding="5dp"
+                android:textAlignment="textEnd"
+                android:textColor="#81ffffff"
+                android:textSize="40sp" />
+
+            <ImageView
+                android:id="@+id/ivWeather"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/locationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:background="#10ffffff"
-            android:padding="5dp"
-            android:textColor="#81ffffff"
-            android:textSize="40sp"
-            android:visibility="invisible" />
+            android:visibility="invisible">
+
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:textColor="#81ffffff"
+                android:textSize="40sp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/btnSend"
