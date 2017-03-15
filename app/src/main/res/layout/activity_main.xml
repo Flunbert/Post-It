@@ -33,7 +33,6 @@
             android:padding="10dp"
             android:src="@drawable/settings" />
     </RelativeLayout>
-    g
 
     <RelativeLayout
         android:id="@+id/assistanceView"
@@ -85,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:text="Sweep your hand across to the screen reset"
+            android:text="Sweep your hand across the screen for reset"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="#81ffffff"
@@ -229,7 +228,7 @@
         <com.facebook.login.widget.LoginButton
             android:id="@+id/fb_login_button"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="60dp"
             android:layout_gravity="center|center_horizontal" />
 
         <Space

@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
     private static String TAG = "MainActivity";
     private CallbackManager callbackManager;
     private Controller controller;
+    private boolean loggedInFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,7 @@ public class MainActivity extends Activity {
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "onSuccess: " + loginResult.toString());
             }
 
             @Override
@@ -68,6 +71,16 @@ public class MainActivity extends Activity {
 
             @Override
             public void onError(FacebookException exception) {
+            }
+        });
+        facebookLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(loggedInFb){
+                    facebookSwitch.setEnabled(false);
+                    facebookSwitch.setChecked(false);
+                    loggedInFb = false;
+                }
             }
         });
 
@@ -94,13 +107,14 @@ public class MainActivity extends Activity {
         twitterSwitch.setEnabled(sharedPreferences.getBoolean("twitterSwitch", false));
         facebookSwitch.setChecked(sharedPreferences.getBoolean("facebookSwitch", false));
         facebookSwitch.setEnabled(sharedPreferences.getBoolean("facebookSwitch",false));
+        loggedInFb = sharedPreferences.getBoolean("facebookSwitch",false);
         controller.onResume();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(resultCode, resultCode, data);
-
+        Log.e(TAG, "onActivityResult: " + requestCode);
         if (requestCode == 140) {
             twitterLoginButton.onActivityResult(requestCode, resultCode, data);
             new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -115,6 +129,7 @@ public class MainActivity extends Activity {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
+                    loggedInFb=true;
                     facebookSwitch.setEnabled(true);
                     facebookSwitch.setChecked(true);
                 }
