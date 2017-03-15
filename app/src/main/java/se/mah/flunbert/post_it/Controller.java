@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -23,6 +24,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.larswerkman.holocolorpicker.ColorPicker;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
@@ -38,34 +40,34 @@ import java.io.IOException;
  * @since 25/2/2017
  */
 public class Controller implements SurfaceHolder.Callback {
-    private boolean cameraIsOn, weatherFetched, locationFetched;
-    private static final String TAG = "Controller";
-    private Camera.ShutterCallback shutterCallback;
-    private Camera.PictureCallback jpegCallback;
-    private Camera.PictureCallback rawCallback;
-    private SensorController sensorController;
-    private APIController apiController;
-    private SurfaceHolder surfaceHolder;
-    private MainActivity mainActivity;
-    private Bitmap pictureTaken;
-    private byte currentCamera, refreshRate;
-    private Camera camera;
-
-    //TODO: Should these exist?
     private ImageView visualHeight, settingsButton, colourButton, btnSelfie, btnSnap, btnSend;
     private Switch assistanceSwitch, twitterSwitch, facebookSwitch;
     private RelativeLayout assistanceView, defaultView, cameraView;
+    private boolean cameraIsOn, weatherFetched, locationFetched;
+    private static final String TAG = "Controller";
+    private Camera.ShutterCallback shutterCallback;
     private TwitterLoginButton twitterLoginButton;
     private LinearLayout settingsView, colourView;
-    private TextView locationView, weatherView;
+    private Camera.PictureCallback jpegCallback;
+    private Camera.PictureCallback rawCallback;
+    private TextView locationView, weatherView, tvPreviewColour;
+    private SensorController sensorController;
+    private byte currentCamera, refreshRate;
+    private APIController apiController;
+    private SurfaceHolder surfaceHolder;
     private Button twitterLogoutButton;
+    private MainActivity mainActivity;
+    private ColorPicker colourPicker;
     private SurfaceView surfaceView;
+    private Bitmap pictureTaken;
     private DrawerLayout drawer;
+    private Camera camera;
 
     /**
-     * TODO
+     * Constructor.
+     * Initializes components.
      *
-     * @param mainActivity
+     * @param mainActivity: Reference to the MainActivity
      */
     public Controller(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -92,7 +94,6 @@ public class Controller implements SurfaceHolder.Callback {
      * Initializes permissions.
      */
     private void initPermissions() {
-        //TODO: Maybe move to sendImage()
         if (mainActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
             mainActivity.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
     }
@@ -101,7 +102,6 @@ public class Controller implements SurfaceHolder.Callback {
      * Initializes views.
      */
     private void initViews() {
-        //TODO: Correct this
         surfaceView = (SurfaceView) mainActivity.findViewById(R.id.cameraHolder);
         defaultView = (RelativeLayout) mainActivity.findViewById(R.id.defaultView);
         cameraView = (RelativeLayout) mainActivity.findViewById(R.id.cameraView);
@@ -122,20 +122,22 @@ public class Controller implements SurfaceHolder.Callback {
         colourButton = (ImageView) mainActivity.findViewById(R.id.colourButton);
         twitterLoginButton = (TwitterLoginButton) mainActivity.findViewById(R.id.twitter_login_button);
         twitterLogoutButton = (Button) mainActivity.findViewById(R.id.twitter_logout_button);
+        colourPicker = (ColorPicker) mainActivity.findViewById(R.id.colourPicker);
+        tvPreviewColour = (TextView) mainActivity.findViewById(R.id.tvPreviewColour);
+
+        colourPicker.setOldCenterColor(Color.WHITE);
     }
 
     /**
      * Initializes listeners.
      */
     private void initListeners() {
-        //TODO: Check if change is needed (maybe move to constructor?)
         ButtonListener buttonListener = new ButtonListener();
         btnSnap.setOnClickListener(buttonListener);
         btnSelfie.setOnClickListener(buttonListener);
         btnSend.setOnClickListener(buttonListener);
         assistanceSwitch.setOnCheckedChangeListener(buttonListener);
         twitterLogoutButton.setOnClickListener(buttonListener);
-        //TODO: Their own listeners
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,6 +150,14 @@ public class Controller implements SurfaceHolder.Callback {
                 drawer.openDrawer(colourView);
             }
         });
+        colourPicker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
+            @Override
+            public void onColorChanged(int color) {
+                weatherView.setTextColor(colourPicker.getColor());
+                locationView.setTextColor(colourPicker.getColor());
+                tvPreviewColour.setTextColor(colourPicker.getColor());
+            }
+        });
     }
 
     /**
@@ -157,19 +167,16 @@ public class Controller implements SurfaceHolder.Callback {
         shutterCallback = new Camera.ShutterCallback() {
             @Override
             public void onShutter() {
-                //TODO: Make this private or hide in a method
             }
         };
         rawCallback = new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
-                //TODO: Make this private or hide in a method
             }
         };
         jpegCallback = new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] bytes, Camera camera) {
-                //TODO: Make this private or hide in a method
                 try {
                     pauseCamera();
                     Bitmap picture = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -177,7 +184,6 @@ public class Controller implements SurfaceHolder.Callback {
                     matrix.postRotate(90);
                     Bitmap scaled = Bitmap.createScaledBitmap(picture, picture.getWidth(), picture.getHeight(), true);
                     pictureTaken = Bitmap.createBitmap(scaled, 0, 0, scaled.getWidth(), scaled.getHeight(), matrix, true);
-                    //TODO: Change name perhaps?
                     Drawable drawable = new BitmapDrawable(mainActivity.getResources(), pictureTaken);
                     defaultView.setBackground(drawable);
                     Log.d(TAG, "Picture has been taken, scaled, and rotated");
@@ -208,8 +214,9 @@ public class Controller implements SurfaceHolder.Callback {
      * Saves image to the phones gallery
      */
     private void sendImage() {
-        //TODO: Fix variable names
         btnSend.setVisibility(View.INVISIBLE);
+        settingsButton.setVisibility(View.INVISIBLE);
+        colourButton.setVisibility(View.INVISIBLE);
         assistanceView.setVisibility(View.INVISIBLE);
         defaultView.setDrawingCacheEnabled(true);
         defaultView.buildDrawingCache(true);
@@ -218,15 +225,12 @@ public class Controller implements SurfaceHolder.Callback {
         defaultView.setDrawingCacheEnabled(false);
         btnSend.setVisibility(View.VISIBLE);
         assistanceView.setVisibility(View.VISIBLE);
-        if (twitterSwitch.isChecked()) {
-            //TODO: Send to twitter
-            boolean sent = false;
-            sent = apiController.sendTweet(path);
-        }
-        if (facebookSwitch.isChecked()) {
-            //TODO: Send to facebook
+        settingsButton.setVisibility(View.VISIBLE);
+        colourButton.setVisibility(View.VISIBLE);
+        if (twitterSwitch.isChecked())
+            apiController.sendTweet(path);
+        if (facebookSwitch.isChecked())
             apiController.sendToFacebook(image);
-        }
         clearScreen();
     }
 
@@ -247,11 +251,9 @@ public class Controller implements SurfaceHolder.Callback {
                     params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                     camera.setParameters(params);
                     camera.setDisplayOrientation(90);
-                } else {
+                } else
                     camera.setDisplayOrientation(270);
-                }
                 camera.startPreview();
-                //TODO: Perhaps a dialogframe instead of a Toast?
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -273,7 +275,6 @@ public class Controller implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
     }
 
     @Override
@@ -281,10 +282,11 @@ public class Controller implements SurfaceHolder.Callback {
     }
 
     /**
-     * TODO
+     * Gets called when a sensor has been triggered.
+     * Checks which sensor it is and calls methods accordingly.
      *
-     * @param sensor
-     * @param value
+     * @param sensor: The sensor that was triggered
+     * @param value:  The formatted value from the sensor
      */
     public void sensorTriggered(SensorController.Sensors sensor, double value) {
         switch (sensor) {
@@ -298,7 +300,7 @@ public class Controller implements SurfaceHolder.Callback {
     }
 
     /**
-     * TODO
+     * Switches camera between front and back
      */
     private void switchCamera() {
         Log.d(TAG, "switchCamera:");
@@ -317,7 +319,6 @@ public class Controller implements SurfaceHolder.Callback {
      * Resets the screen.
      */
     private void clearScreen() {
-        //TODO: Clear screen
         Log.d(TAG, "clearScreen: clearing screen");
         defaultView.setBackground(mainActivity.getResources().getDrawable(R.drawable.default_background));
         locationView.setVisibility(View.INVISIBLE);
@@ -334,7 +335,7 @@ public class Controller implements SurfaceHolder.Callback {
      * If device is held up above user, fetch weather from API.
      * If device is held down towards the ground, fetch location form API.
      *
-     * @param angle: Values from the rotation sensor
+     * @param angle: Value from the rotation sensor
      */
     private void accelerometerChecks(double angle) {
         if (refreshRate == 3) {
@@ -342,24 +343,21 @@ public class Controller implements SurfaceHolder.Callback {
             refreshRate = 0;
         } else
             refreshRate++;
+
         if (angle >= 60 && angle < 120 && !cameraIsOn && pictureTaken == null) {
             cameraIsOn = true;
-            //TODO: Check if should start camera
             startCamera();
             Log.d(TAG, "sensorTriggered: start camera");
         } else if ((angle < 60 || angle >= 120) && cameraIsOn) {
-            //TODO: Check if should close camera
             cameraIsOn = false;
             pauseCamera();
             Log.d(TAG, "sensorTriggered: pause camera");
         } else if (angle >= 150 && !weatherFetched && angle > 0) {
-            //TODO: Check if should fetch weather
             weatherFetched = true;
             Log.d(TAG, "sensorTriggered: fetching weather");
             weatherView.setVisibility(View.VISIBLE);
             apiController.fetchAPI(APIController.APIs.weather, weatherView);
         } else if (angle < 30 && !locationFetched && angle > 0) {
-            //TODO: Check if should fetch location
             locationFetched = true;
             Log.d(TAG, "sensorTriggered: fetching location");
             locationView.setVisibility(View.VISIBLE);
@@ -382,10 +380,16 @@ public class Controller implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Unregisters sensors.
+     */
     public void onPause() {
         sensorController.onPause();
     }
 
+    /**
+     * Re-registers sensors.
+     */
     public void onResume() {
         sensorController.onResume();
     }
@@ -396,7 +400,6 @@ public class Controller implements SurfaceHolder.Callback {
     private class ButtonListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
         @Override
         public void onClick(View view) {
-            //TODO: Dialogframe instead of Toast mayhaps?
             if (view == btnSnap && cameraIsOn) {
                 camera.takePicture(shutterCallback, rawCallback, jpegCallback);
             } else if (view == btnSelfie) {

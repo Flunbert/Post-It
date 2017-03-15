@@ -25,16 +25,25 @@ public class SensorController implements SensorEventListener {
     private Controller controller;
     private Activity activity;
 
+    /**
+     * Unregisters sensors.
+     */
     public void onPause() {
         sensorManager.unregisterListener(this);
         sensorList = null;
         sensorManager = null;
     }
 
+    /**
+     * Re-registers sensors.
+     */
     public void onResume() {
         initSensors();
     }
 
+    /**
+     * Enum of sensors
+     */
     public enum Sensors {
         proximity, rotation
     }
@@ -44,6 +53,7 @@ public class SensorController implements SensorEventListener {
      * Initializes variables.
      *
      * @param controller: The controller to be used
+     * @param activity:   Current Activity
      */
     public SensorController(Controller controller, Activity activity) {
         this.controller = controller;
@@ -71,21 +81,17 @@ public class SensorController implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         switch (sensorEvent.sensor.getType()) {
             case Sensor.TYPE_ACCELEROMETER:
-                //TODO: Accelerometer has been fired
                 float[] values = {sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]};
                 float[] qtnValues = new float[4];
-                sensorManager.getQuaternionFromVector(qtnValues, values);
+                SensorManager.getQuaternionFromVector(qtnValues, values);
 
                 double ang = Math.atan2(2 * (qtnValues[2] * qtnValues[3] + qtnValues[0] * qtnValues[1]),
                         qtnValues[0] * qtnValues[0] - qtnValues[1] * qtnValues[1] - qtnValues[2] * qtnValues[2] + qtnValues[3] * qtnValues[3]);
-
                 double angle = Math.toDegrees(ang);
-//                Log.d(TAG, "onSensorChanged: " + angle);
 
                 controller.sensorTriggered(Sensors.rotation, angle);
                 break;
             case Sensor.TYPE_PROXIMITY:
-                //TODO: Proximity sensor has been fired
                 if (sensorEvent.values[0] == 0) {
                     Log.d(TAG, "onSensorChanged: proximity fired");
                     controller.sensorTriggered(Sensors.proximity, 0);
@@ -96,6 +102,5 @@ public class SensorController implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 }

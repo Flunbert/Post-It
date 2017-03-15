@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
@@ -28,9 +27,8 @@ public class MainActivity extends Activity {
     private TwitterLoginButton twitterLoginButton;
     private SharedPreferences sharedPreferences;
     private static String TAG = "MainActivity";
-    private Controller controller;
     private CallbackManager callbackManager;
-    private LoginButton facebookLoginButton;
+    private Controller controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,23 +51,19 @@ public class MainActivity extends Activity {
             twitterLogoutButton.setVisibility(View.GONE);
         else
             twitterLoginButton.setVisibility(View.GONE);
-        facebookLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
+        LoginButton facebookLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         facebookLoginButton.setReadPermissions("email");
-
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
             }
 
             @Override
             public void onCancel() {
-                // App code
             }
 
             @Override
             public void onError(FacebookException exception) {
-                // App code
             }
         });
 
