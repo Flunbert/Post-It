@@ -10,5 +10,7 @@
     <string name="camera">Camera</string>
     <string name="location">Location</string>
     <string name="facebook_app_id">1859358027619434</string>
+    <string name="twitter_key">9Wfs06IF2gRS7x7DnNiEBCmqZ</string>
+    <string name="twitter_secret">ZycIA5Eyoet3zatWRuTsJ2yRDHUb4K2j7vpG2gIC1S2qZdcAh8</string>
     <string name="preview_color">Preview color</string>
 </resources>

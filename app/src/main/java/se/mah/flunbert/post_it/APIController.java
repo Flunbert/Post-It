@@ -68,11 +68,11 @@ import static android.content.Context.LOCATION_SERVICE;
 public class APIController {
     private static String TAG = "APIController";
     //private boolean canUseGps;
-    private APIStorage apiStorage;
     private MainActivity activity;
     private LocationManager mLocationManager;
     private Location currentLoc;
     private boolean sentTweet;
+    private final String WEATHER_KEY = "56fc4dd72aef4a05b9780638172802";
 
     public enum APIs {
         facebook, twitter, weather, location
@@ -84,7 +84,6 @@ public class APIController {
 
         }
         this.activity = activity;
-        this.apiStorage = new APIStorage();
         mLocationManager = (LocationManager) activity.getSystemService(LOCATION_SERVICE);
 
     }
@@ -117,8 +116,10 @@ public class APIController {
         switch (api) {
             case location:
                 String localLocation = getLocationString();
-                tv.setText(localLocation);
-                layout.setVisibility(View.VISIBLE);
+                if(localLocation!=null) {
+                    tv.setText(localLocation);
+                    layout.setVisibility(View.VISIBLE);
+                }
                 return null;
             case weather:
                 String location = getWeatherLocation();
@@ -374,17 +375,6 @@ public class APIController {
         return sentTweet;
     }
 
-
-    private class APIStorage {
-        private final String TWITTER_KEY = "9Wfs06IF2gRS7x7DnNiEBCmqZ";
-        /**
-         * Defines a private static of string for the twitter secret.
-         */
-        private final String TWITTER_SECRET = "ZycIA5Eyoet3zatWRuTsJ2yRDHUb4K2j7vpG2gIC1S2qZdcAh8";
-
-        private final String WEATHER_KEY = "56fc4dd72aef4a05b9780638172802";
-    }
-
     /**
      * Listener Class used to get a location
      */
@@ -431,7 +421,7 @@ public class APIController {
         @Override
         public void run() {
             try {
-                URL url = new URL("http://api.apixu.com/v1/current.json?key=" + apiStorage.WEATHER_KEY + "&q=" + weatherCallLocation);
+                URL url = new URL("http://api.apixu.com/v1/current.json?key=" + WEATHER_KEY + "&q=" + weatherCallLocation);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
