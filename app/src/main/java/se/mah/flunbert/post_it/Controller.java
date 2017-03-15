@@ -52,7 +52,7 @@ public class Controller implements SurfaceHolder.Callback {
     private Camera.PictureCallback rawCallback;
     private TextView tvLocation, tvWeather, tvPreviewColour;
     private SensorController sensorController;
-    private byte currentCamera, refreshRate, cameraDelay;
+    private byte currentCamera, cameraDelay;
     private APIController apiController;
     private SurfaceHolder surfaceHolder;
     private Button twitterLogoutButton;
@@ -77,7 +77,6 @@ public class Controller implements SurfaceHolder.Callback {
         sensorController = new SensorController(this, mainActivity);
         cameraIsOn = false;
         currentCamera = 0;
-        refreshRate = 0;
         weatherFetched = false;
         locationFetched = false;
         cameraDelay = 0;
@@ -349,20 +348,15 @@ public class Controller implements SurfaceHolder.Callback {
      * @param angle: Value from the rotation sensor
      */
     private void angleChecks(double angle) {
-        Log.d(TAG, "angleChecks: " + angle);
         shouldStartCamera = false;
-        if (refreshRate == 3) {
-            final float scale = mainActivity.getResources().getDisplayMetrics().density;
-            if(angle<0){
-                angle=angle *-1;
-            }
-            visualHeight.setTop((int) Math.round((((angle-90)) * -scale)/0.58));
-            refreshRate = 0;
-        } else
-            refreshRate++;
+        final float scale = mainActivity.getResources().getDisplayMetrics().density;
+        if (angle < 0) {
+            angle = angle * -1;
+        }
+        visualHeight.setTop((int) Math.round((((angle - 90)) * -scale) / 0.58));
 
         if (angle >= 80 && angle < 100 && !cameraIsOn && pictureTaken == null) {
-            if(!loadingCamera && !cameraIsOn){
+            if (!loadingCamera && !cameraIsOn) {
                 pDLoadingCamerafinal = MyProgressDialog.show(mainActivity, "Loading Camera", "Loading", true, false, null);
                 loadingCamera = true;
             }
@@ -373,17 +367,17 @@ public class Controller implements SurfaceHolder.Callback {
             }
             if (shouldStartCamera) {
                 pDLoadingCamerafinal.dismiss();
-                loadingCamera=false;
+                loadingCamera = false;
                 cameraIsOn = true;
                 startCamera();
                 Log.d(TAG, "sensorTriggered: start camera");
             }
         } else if ((angle <= 70 || angle >= 110) && (cameraIsOn || loadingCamera)) {
-            if(loadingCamera){
+            if (loadingCamera) {
                 pDLoadingCamerafinal.dismiss();
-                loadingCamera=false;
+                loadingCamera = false;
                 cameraDelay = 0;
-            }else {
+            } else {
                 cameraDelay = 0;
                 cameraIsOn = false;
                 pauseCamera();
