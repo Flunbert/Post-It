@@ -352,7 +352,11 @@ public class Controller implements SurfaceHolder.Callback {
         Log.d(TAG, "angleChecks: " + angle);
         shouldStartCamera = false;
         if (refreshRate == 3) {
-            visualHeight.setTop((int) Math.round(angle));
+            final float scale = mainActivity.getResources().getDisplayMetrics().density;
+            if(angle<0){
+                angle=angle *-1;
+            }
+            visualHeight.setTop((int) Math.round((((angle-90)) * -scale)/0.58));
             refreshRate = 0;
         } else
             refreshRate++;
