@@ -355,13 +355,13 @@ public class Controller implements SurfaceHolder.Callback {
         }
         visualHeight.setTop((int) Math.round((((angle - 90)) * -scale) / 0.58));
 
-        if (angle >= 80 && angle < 100 && !cameraIsOn && pictureTaken == null) {
+        if (angle >= 70 && angle < 110 && !cameraIsOn && pictureTaken == null) {
             if (!loadingCamera && !cameraIsOn) {
                 pDLoadingCamerafinal = MyProgressDialog.show(mainActivity, "Loading Camera", "Loading", true, false, null);
                 loadingCamera = true;
             }
             cameraDelay++;
-            if (cameraDelay == 40) {
+            if (cameraDelay == 20) {
                 shouldStartCamera = true;
                 cameraDelay = 0;
             }
